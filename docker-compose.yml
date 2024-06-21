@@ -3,52 +3,56 @@ version: "3.8"
 services:
     frontend:
         build:
-            context: .
-            dockerfile: frontend/Dockerfile
+            context: ./frontend
+            dockerfile: Dockerfile
         env_file:
             - .env
         ports:
-            - 8000:8000
-        volumes:
-            - ./frontend:/usr/src/app
+            - 5173:5173
         depends_on:
             - backend
-        command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+        command: npm run dev
+        develop:
+            watch:
+                - action: sync
+                  path: ./frontend
+                  target: /usr/src/app
+                - action: rebuild
+                  path: ./frontend/package.json
 
     backend:
         build:
-            context: .
-            dockerfile: backend/Dockerfile
+            context: ./backend
+            dockerfile: Dockerfile
         env_file:
             - .env
         ports:
-            - 8000:8000
-        volumes:
-            - ./backend:/usr/src/app
+            - "3000:${EXPRESS_PORT}"
         depends_on:
             - mongodb
-        command: uvicorn main:app --reload --host 0.0.0.0 --port 8000
+        command: npm run dev
+        develop:
+            watch:
+                - action: sync
+                  path: ./backend
+                  target: /usr/src/app
+                - action: rebuild
+                  path: ./backend/package.json
 
     mongodb:
-        build:
-            context: .
-            dockerfile: mongodb/Dockerfile
+        image: mongo:latest
         ports:
-            - 27018:27017
+            - 27018:${MONGO_PORT}
         env_file:
             - .env
-        command:
-            [
-                "mongod",
-                "--keyFile",
-                "/usr/src/mongo.key",
-                "--replSet",
-                "rs0",
-                "--bind_ip",
-                "0.0.0.0",
-            ]
         volumes:
             - mongodb_data:/data/db
+
+    redis:
+        image: redis:latest
+        container_name: redis
+        ports:
+        - "6378:${REDIS_PORT}"
 
 volumes:
     mongodb_data:
