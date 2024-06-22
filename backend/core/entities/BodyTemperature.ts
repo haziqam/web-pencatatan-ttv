@@ -24,7 +24,7 @@ export class BodyTemperature extends VitalSign {
             this.status = "LOW";
         } else if (
             this.celcius >= threshold[0] &&
-            this.celcius <= threshold[0]
+            this.celcius <= threshold[1]
         ) {
             this.status = "NORMAL";
         } else {

@@ -1,8 +1,8 @@
 export class RespiratoryRate extends VitalSign {
-    private static readonly NORMAL_THRESHOLD = [60, 100];
+    private static readonly NORMAL_THRESHOLD = [12, 20];
 
     constructor(
-        private beatsPerMinute: number,
+        private breathsPerMinute: number,
 
         id: string,
         userId: string,
@@ -20,11 +20,11 @@ export class RespiratoryRate extends VitalSign {
 
     private calculateStatus() {
         const threshold = RespiratoryRate.NORMAL_THRESHOLD;
-        if (this.beatsPerMinute < threshold[0]) {
+        if (this.breathsPerMinute < threshold[0]) {
             this.status = "LOW";
         } else if (
-            this.beatsPerMinute >= threshold[0] &&
-            this.beatsPerMinute <= threshold[0]
+            this.breathsPerMinute >= threshold[0] &&
+            this.breathsPerMinute <= threshold[1]
         ) {
             this.status = "NORMAL";
         } else {
@@ -38,7 +38,7 @@ export class RespiratoryRate extends VitalSign {
             userId: this.userId,
             timeMeasured: this.timeMeasured,
             status: this.status,
-            beatsPerMinute: this.beatsPerMinute,
+            breathsPerMinute: this.breathsPerMinute,
         };
     }
 }

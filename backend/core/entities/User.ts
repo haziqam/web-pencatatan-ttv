@@ -9,7 +9,7 @@ export class User {
     ) {}
 }
 
-enum Sex {
+export enum Sex {
     MALE = "MALE",
     FEMALE = "FEMALE",
 }

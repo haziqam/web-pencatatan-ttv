@@ -2,7 +2,7 @@ abstract class VitalSign {
     protected status: string = "";
 
     constructor(
-        protected id: string,
+        protected readonly id: string,
         protected userId: string,
         protected timeMeasured: Date
     ) {}

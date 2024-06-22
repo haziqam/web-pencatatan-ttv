@@ -24,7 +24,7 @@ export class HeartBeat extends VitalSign {
             this.status = "LOW";
         } else if (
             this.beatsPerMinute >= threshold[0] &&
-            this.beatsPerMinute <= threshold[0]
+            this.beatsPerMinute <= threshold[1]
         ) {
             this.status = "NORMAL";
         } else {
