@@ -1,11 +1,11 @@
 import { BodyTemperature } from "../entities/BodyTemperature";
 
 export interface IBodyTemperatureRepository {
-    getAll(userId: string): BodyTemperature[];
+    getAll(userId: string): Promise<BodyTemperature[]>;
 
-    store(userId: string, celcius: number): BodyTemperature;
+    store(userId: string, celcius: number): Promise<BodyTemperature>;
 
-    update(bloodPressure: BodyTemperature): BodyTemperature;
+    update(bloodPressure: BodyTemperature): Promise<BodyTemperature>;
 
-    delete(bloodPressure: BodyTemperature): void;
+    delete(bloodPressure: BodyTemperature): Promise<void>;
 }

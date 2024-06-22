@@ -1,3 +1,3 @@
 export interface IVitalSignRepository {
-    getAll(userId: string): VitalSign[];
+    getAll(userId: string): Promise<VitalSign[]>;
 }
