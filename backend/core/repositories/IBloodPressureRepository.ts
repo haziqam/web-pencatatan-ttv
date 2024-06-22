@@ -11,8 +11,8 @@ export interface IBloodPressureRepository {
 
     update(
         id: string,
-        systole: number | null,
-        diastole: number | null
+        systole: number | undefined,
+        diastole: number | undefined
     ): Promise<BloodPressure>;
 
     delete(id: string): Promise<void>;

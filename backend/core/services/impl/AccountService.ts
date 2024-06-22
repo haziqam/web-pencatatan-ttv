@@ -23,7 +23,7 @@ export class AccountService implements IService {
         this.jwtSecret = process.env.JWT_SECRET_KEY!;
     }
 
-    async register(req: Request<any, any, RegisterPayload>, res: Response) {
+    async register(req: Request<{}, {}, RegisterPayload>, res: Response) {
         try {
             const { email, password, firstName, lastName, dateOfBirth, sex } =
                 req.body;
@@ -43,21 +43,21 @@ export class AccountService implements IService {
                 data: user.publicDataAsJson(),
             });
         } catch (error) {
-            res.status(400).json({
-                message: "Invalid request",
+            res.status(500).json({
+                message: "Internal server error",
                 errors: (error as Error).message,
             });
         }
     }
 
     async cacheLogin(
-        req: Request<any, any, LoginPayload>,
+        req: Request<{}, {}, LoginPayload>,
         res: Response,
         next: NextFunction
     ) {
         const { email, password } = req.body;
         try {
-            const cachedUser = await this.cache.get(`user/email/${email}`);
+            const cachedUser = await this.cache.get(`/users/email/${email}`);
             if (!cachedUser) {
                 return next();
             }
@@ -82,14 +82,11 @@ export class AccountService implements IService {
                 data: { id: user.id },
             });
         } catch (error) {
-            res.status(400).json({
-                message: "Invalid request",
-                errors: (error as Error).message,
-            });
+            next();
         }
     }
 
-    async login(req: Request<any, any, LoginPayload>, res: Response) {
+    async login(req: Request<{}, {}, LoginPayload>, res: Response) {
         try {
             const { email, password } = req.body;
 
@@ -116,7 +113,7 @@ export class AccountService implements IService {
             this.setJwtCookie(user, res);
 
             this.cache.set(
-                `user/email/${email}`,
+                `/users/email/${email}`,
                 JSON.stringify(user.dataAsJson())
             );
 
@@ -125,8 +122,8 @@ export class AccountService implements IService {
                 data: { id: user.id },
             });
         } catch (error) {
-            res.status(400).json({
-                message: "Invalid request",
+            res.status(500).json({
+                message: "Internal server error",
                 errors: (error as Error).message,
             });
         }
@@ -148,22 +145,19 @@ export class AccountService implements IService {
 
             await Promise.all([
                 this.userRepository.delete(id),
-                this.cache.delete(`user/email/${email}`),
+                this.cache.delete(`/users/email/${email}`),
             ]);
 
             res.status(200).json({ message: "User deleted successfully" });
         } catch (error) {
-            res.status(400).json({
-                message: "Invalid request",
+            res.status(500).json({
+                message: "Internal server error",
                 errors: (error as Error).message,
             });
         }
     }
 
-    private setJwtCookie(
-        user: UserIdentifier,
-        res: Response<any, Record<string, any>>
-    ) {
+    private setJwtCookie(user: UserIdentifier, res: Response) {
         const token = jwt.sign(
             { id: user.id, email: user.email },
             this.jwtSecret,
@@ -177,7 +171,7 @@ export class AccountService implements IService {
         });
     }
 
-    private clearJwtCookie(res: Response<any, Record<string, any>>) {
+    private clearJwtCookie(res: Response) {
         res.clearCookie("access-token");
     }
 
