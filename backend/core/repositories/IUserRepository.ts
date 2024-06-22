@@ -2,17 +2,19 @@ import { Sex, User } from "../entities/User";
 
 export interface IUserRepository {
     create(
+        email: string,
+        hashedPassword: string,
         firstName: string,
         lastName: string,
         dateOfBirth: Date,
         sex: Sex
-    ): User;
+    ): Promise<User>;
 
-    findById(id: string): User | null;
+    findById(id: string): Promise<User | null>;
 
-    findByEmail(email: string): User | null;
+    findByEmail(email: string): Promise<User | null>;
 
-    update(user: User): User;
+    update(user: User): Promise<User>;
 
-    delete(user: User): void;
+    delete(id: string): Promise<void>;
 }
