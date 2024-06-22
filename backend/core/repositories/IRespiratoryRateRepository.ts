@@ -5,7 +5,7 @@ export interface IRespiratoryRateRepository {
 
     store(userId: string, breathsPerMinute: number): Promise<RespiratoryRate>;
 
-    update(bloodPressure: RespiratoryRate): Promise<RespiratoryRate>;
+    update(id: string, breathsPerMinute: number): Promise<RespiratoryRate>;
 
-    delete(bloodPressure: RespiratoryRate): Promise<void>;
+    delete(id: string): Promise<void>;
 }

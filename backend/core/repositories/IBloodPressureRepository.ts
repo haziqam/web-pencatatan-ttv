@@ -9,7 +9,11 @@ export interface IBloodPressureRepository {
         diastole: number
     ): Promise<BloodPressure>;
 
-    update(bloodPressure: BloodPressure): Promise<BloodPressure>;
+    update(
+        id: string,
+        systole: number | null,
+        diastole: number | null
+    ): Promise<BloodPressure>;
 
-    delete(bloodPressure: BloodPressure): Promise<void>;
+    delete(id: string): Promise<void>;
 }

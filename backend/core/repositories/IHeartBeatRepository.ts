@@ -5,7 +5,7 @@ export interface IHeartBeatRepository {
 
     store(userId: string, beatsPerMinute: number): Promise<HeartBeat>;
 
-    update(bloodPressure: HeartBeat): Promise<HeartBeat>;
+    update(id: string, beatsPerMinute: number): Promise<HeartBeat>;
 
-    delete(bloodPressure: HeartBeat): Promise<void>;
+    delete(id: string): Promise<void>;
 }

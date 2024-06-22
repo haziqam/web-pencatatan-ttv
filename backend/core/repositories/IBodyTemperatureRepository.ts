@@ -5,7 +5,7 @@ export interface IBodyTemperatureRepository {
 
     store(userId: string, celcius: number): Promise<BodyTemperature>;
 
-    update(bloodPressure: BodyTemperature): Promise<BodyTemperature>;
+    update(id: string, celcius: number): Promise<BodyTemperature>;
 
-    delete(bloodPressure: BodyTemperature): Promise<void>;
+    delete(id: string): Promise<void>;
 }
