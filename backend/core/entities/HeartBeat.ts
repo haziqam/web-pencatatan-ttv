@@ -9,7 +9,7 @@ export class HeartBeat extends VitalSign {
         timeMeasured: Date,
         status?: string
     ) {
-        super(id, userId, timeMeasured);
+        super(id, "HEART_BEAT", userId, timeMeasured);
 
         if (status) {
             this.status = status;

@@ -3,6 +3,7 @@ abstract class VitalSign {
 
     constructor(
         protected readonly id: string,
+        protected name: string = "",
         protected userId: string,
         protected timeMeasured: Date
     ) {}

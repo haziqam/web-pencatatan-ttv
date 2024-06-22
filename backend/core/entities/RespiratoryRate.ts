@@ -9,7 +9,7 @@ export class RespiratoryRate extends VitalSign {
         timeMeasured: Date,
         status?: string
     ) {
-        super(id, userId, timeMeasured);
+        super(id, "RESPIRATORY_RATE", userId, timeMeasured);
 
         if (status) {
             this.status = status;

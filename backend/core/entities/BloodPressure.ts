@@ -8,7 +8,7 @@ export class BloodPressure extends VitalSign {
         timeMeasured: Date,
         status?: string
     ) {
-        super(id, userId, timeMeasured);
+        super(id, "BLOOD_PRESSURE", userId, timeMeasured);
 
         if (status) {
             this.status = status;
