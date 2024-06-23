@@ -1,11 +1,14 @@
+import { Json } from "./Json";
+import { VitalSign } from "./VitalSign";
+
 export class RespiratoryRate extends VitalSign {
     private static readonly NORMAL_THRESHOLD = [12, 20];
 
     constructor(
         private breathsPerMinute: number,
 
-        timeMeasured: Date,
         userId: string,
+        timeMeasured: Date,
         id?: string,
         status?: string
     ) {
@@ -34,7 +37,8 @@ export class RespiratoryRate extends VitalSign {
 
     dataAsJson(): Json {
         return {
-            id: this.userId,
+            id: this.id,
+            name: this.name,
             userId: this.userId,
             timeMeasured: this.timeMeasured,
             status: this.status,

@@ -1,3 +1,6 @@
+import { Json } from "./Json";
+import { VitalSign } from "./VitalSign";
+
 export class BodyTemperature extends VitalSign {
     private static readonly NORMAL_THRESHOLD = [36.5, 37.5];
 
@@ -34,7 +37,8 @@ export class BodyTemperature extends VitalSign {
 
     dataAsJson(): Json {
         return {
-            id: this.userId,
+            id: this.id,
+            name: this.name,
             userId: this.userId,
             timeMeasured: this.timeMeasured,
             status: this.status,

@@ -1,4 +1,6 @@
-abstract class VitalSign {
+import { Json } from "./Json";
+
+export abstract class VitalSign {
     public status: string = "";
 
     constructor(
@@ -10,7 +12,3 @@ abstract class VitalSign {
 
     abstract dataAsJson(): Json;
 }
-
-type Json = {
-    [key: string]: any;
-};

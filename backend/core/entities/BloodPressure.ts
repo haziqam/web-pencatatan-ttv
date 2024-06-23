@@ -1,10 +1,13 @@
+import { Json } from "./Json";
+import { VitalSign } from "./VitalSign";
+
 export class BloodPressure extends VitalSign {
     constructor(
         private systole: number,
         private diastole: number,
 
-        timeMeasured: Date,
         userId: string,
+        timeMeasured: Date,
         id?: string,
         status?: string
     ) {
@@ -38,7 +41,8 @@ export class BloodPressure extends VitalSign {
 
     dataAsJson(): Json {
         return {
-            id: this.userId,
+            id: this.id,
+            name: this.name,
             userId: this.userId,
             timeMeasured: this.timeMeasured,
             status: this.status,

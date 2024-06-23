@@ -1,3 +1,5 @@
+import { Json } from "./Json";
+
 export class User {
     constructor(
         private readonly _id: string,
