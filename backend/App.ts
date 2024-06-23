@@ -32,6 +32,7 @@ export class App {
         await mongoClient.connect();
         const db = mongoClient.db(dbName);
         const userCollection = db.collection("User");
+        await userCollection.createIndex({ email: 1 }, { unique: true });
         const vitalSignCollection = db.collection("VitalSign");
 
         // Redis

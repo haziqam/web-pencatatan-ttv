@@ -6,6 +6,7 @@ import {
     StoreRespiratoryRatePayload,
     UpdateRespiratoryRatePayload,
 } from "../schema/vitalSignSchema";
+import { auth } from "../middlewares/auth";
 
 export class RespiratoryRateService implements IService {
     private router: Router;
@@ -157,9 +158,9 @@ export class RespiratoryRateService implements IService {
             this.cacheGetAll.bind(this),
             this.getAll.bind(this)
         );
-        this.router.post("/", this.store.bind(this));
-        this.router.put("/:respiratoryRateId", this.update.bind(this));
-        this.router.delete("/:respiratoryRateId", this.delete.bind(this));
+        this.router.post("/", auth, this.store.bind(this));
+        this.router.put("/:respiratoryRateId", auth, this.update.bind(this));
+        this.router.delete("/:respiratoryRateId", auth, this.delete.bind(this));
 
         this.app.use("/users/:id/respiratory-rates", this.router);
     }

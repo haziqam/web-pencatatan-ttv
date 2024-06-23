@@ -6,6 +6,7 @@ import {
     StoreHeartBeatPayload,
     UpdateHeartBeatPayload,
 } from "../schema/vitalSignSchema";
+import { auth } from "../middlewares/auth";
 
 export class HeartBeatService implements IService {
     private router: Router;
@@ -154,9 +155,9 @@ export class HeartBeatService implements IService {
             this.cacheGetAll.bind(this),
             this.getAll.bind(this)
         );
-        this.router.post("/", this.store.bind(this));
-        this.router.put("/:heartBeatId", this.update.bind(this));
-        this.router.delete("/:heartBeatId", this.delete.bind(this));
+        this.router.post("/", auth, this.store.bind(this));
+        this.router.put("/:heartBeatId", auth, this.update.bind(this));
+        this.router.delete("/:heartBeatId", auth, this.delete.bind(this));
 
         this.app.use("/users/:id/heart-beats", this.router);
     }

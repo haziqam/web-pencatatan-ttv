@@ -2,6 +2,7 @@ import { ICache } from "../../../caches/ICache";
 import { IVitalSignRepository } from "../../repositories/IVitalSignRepository";
 import { IService } from "../IService";
 import { Express, NextFunction, Request, Response, Router } from "express";
+import { auth } from "../middlewares/auth";
 
 export class VitalSignService implements IService {
     private router: Router;
@@ -62,6 +63,7 @@ export class VitalSignService implements IService {
     registerRoutes(): void {
         this.router.get(
             "/",
+            auth,
             this.cacheGetAll.bind(this),
             this.getAll.bind(this)
         );

@@ -6,6 +6,7 @@ import {
     StoreBloodPressurePayload,
     UpdateBloodPressurePayload,
 } from "../schema/vitalSignSchema";
+import { auth } from "../middlewares/auth";
 
 export class BloodPressureService implements IService {
     private router: Router;
@@ -157,12 +158,13 @@ export class BloodPressureService implements IService {
     registerRoutes(): void {
         this.router.get(
             "/",
+            auth,
             this.cacheGetAll.bind(this),
             this.getAll.bind(this)
         );
-        this.router.post("/", this.store.bind(this));
-        this.router.put("/:bloodPressureId", this.update.bind(this));
-        this.router.delete("/:bloodPressureId", this.delete.bind(this));
+        this.router.post("/", auth, this.store.bind(this));
+        this.router.put("/:bloodPressureId", auth, this.update.bind(this));
+        this.router.delete("/:bloodPressureId", auth, this.delete.bind(this));
 
         this.app.use("/users/:id/blood-pressures", this.router);
     }

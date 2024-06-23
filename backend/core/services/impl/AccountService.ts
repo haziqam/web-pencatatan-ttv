@@ -5,7 +5,17 @@ import jwt from "jsonwebtoken";
 import { ICache } from "../../../caches/ICache";
 import { IUserRepository } from "../../repositories/IUserRepository";
 import { IService } from "../IService";
-import { LoginPayload, RegisterPayload } from "../schema/authSchema";
+import {
+    LoginPayload,
+    RegisterPayload,
+    loginSchema,
+    registerSchema,
+} from "../schema/authSchema";
+import { UserIdentifier } from "../schema/UserIdentifier";
+import { auth } from "../middlewares/auth";
+import { validateRequest } from "../middlewares/validateRequest";
+import { MongoServerError } from "mongodb";
+import { RequestWithIdentifier } from "../middlewares/RequestWithIdentifier";
 
 export class AccountService implements IService {
     private router: Router;
@@ -34,7 +44,7 @@ export class AccountService implements IService {
                 hashedPassword,
                 firstName,
                 lastName,
-                dateOfBirth,
+                new Date(dateOfBirth),
                 sex
             );
 
@@ -43,6 +53,11 @@ export class AccountService implements IService {
                 data: user.publicDataAsJson(),
             });
         } catch (error) {
+            if (error instanceof MongoServerError && error.code === 11000) {
+                return res.status(400).json({
+                    message: "User with this email already exists",
+                });
+            }
             res.status(500).json({
                 message: "Internal server error",
                 errors: (error as Error).message,
@@ -134,24 +149,21 @@ export class AccountService implements IService {
         res.status(200).json({ message: "Logged out successfully" });
     }
 
-    async delete(req: Request, res: Response) {
+    async delete(req: RequestWithIdentifier, res: Response) {
         try {
-            const token = req.cookies["access-token"];
-            const decodedToken = jwt.verify(
-                token,
-                this.jwtSecret
-            ) as UserIdentifier;
-            const { id, email } = decodedToken;
+            const { id, email } = req.userIdentifier!;
 
             await Promise.all([
                 this.userRepository.delete(id),
                 this.cache.delete(`/users/email/${email}`),
             ]);
 
+            this.clearJwtCookie(res);
+
             res.status(200).json({ message: "User deleted successfully" });
         } catch (error) {
-            res.status(500).json({
-                message: "Internal server error",
+            res.status(403).json({
+                message: "Forbidden request",
                 errors: (error as Error).message,
             });
         }
@@ -159,9 +171,14 @@ export class AccountService implements IService {
 
     private setJwtCookie(user: UserIdentifier, res: Response) {
         const token = jwt.sign(
-            { id: user.id, email: user.email },
+            {
+                id: user.id,
+                email: user.email,
+            },
             this.jwtSecret,
-            { expiresIn: "1h" }
+            {
+                expiresIn: "1h",
+            }
         );
 
         res.cookie("access-token", token, {
@@ -176,20 +193,20 @@ export class AccountService implements IService {
     }
 
     registerRoutes(): void {
-        this.router.post("/register", this.register.bind(this));
+        this.router.post(
+            "/register",
+            validateRequest(registerSchema),
+            this.register.bind(this)
+        );
         this.router.post(
             "/login",
+            validateRequest(loginSchema),
             this.cacheLogin.bind(this),
             this.login.bind(this)
         );
         this.router.post("/logout", this.logout.bind(this));
-        this.router.delete("/delete", this.delete.bind(this));
+        this.router.delete("/delete", auth, this.delete.bind(this));
 
         this.app.use("/users/auth", this.router);
     }
 }
-
-type UserIdentifier = {
-    email: string;
-    id: string;
-};

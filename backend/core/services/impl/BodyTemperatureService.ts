@@ -6,6 +6,7 @@ import {
     StoreBodyTemperaturePayload,
     UpdateBodyTemperaturePayload,
 } from "../schema/vitalSignSchema";
+import { auth } from "../middlewares/auth";
 
 export class BodyTemperatureService implements IService {
     private router: Router;
@@ -147,12 +148,13 @@ export class BodyTemperatureService implements IService {
     registerRoutes(): void {
         this.router.get(
             "/",
+            auth,
             this.cacheGetAll.bind(this),
             this.getAll.bind(this)
         );
-        this.router.post("/", this.store.bind(this));
-        this.router.put("/:tempId", this.update.bind(this));
-        this.router.delete("/:tempId", this.delete.bind(this));
+        this.router.post("/", auth, this.store.bind(this));
+        this.router.put("/:tempId", auth, this.update.bind(this));
+        this.router.delete("/:tempId", auth, this.delete.bind(this));
 
         this.app.use("/users/:id/body-temperatures", this.router);
     }
