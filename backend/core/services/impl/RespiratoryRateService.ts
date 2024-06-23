@@ -2,7 +2,10 @@ import { ICache } from "../../../caches/ICache";
 import { IRespiratoryRateRepository } from "../../repositories/IRespiratoryRateRepository";
 import { IService } from "../IService";
 import { Express, NextFunction, Request, Response, Router } from "express";
-import { RespiratoryRatePayload } from "../schema/vitalSignSchema";
+import {
+    StoreRespiratoryRatePayload,
+    UpdateRespiratoryRatePayload,
+} from "../schema/vitalSignSchema";
 
 export class RespiratoryRateService implements IService {
     private router: Router;
@@ -66,14 +69,15 @@ export class RespiratoryRateService implements IService {
     }
 
     async store(
-        req: Request<{ id: string }, {}, RespiratoryRatePayload>,
+        req: Request<{ id: string }, {}, StoreRespiratoryRatePayload>,
         res: Response
     ) {
         try {
             const { id } = req.params;
-            const { breathsPerMinute } = req.body;
+            const { timeMeasured, breathsPerMinute } = req.body;
             const respiratoryRate = await this.respiratoryRateRepository.store(
                 id,
+                new Date(timeMeasured),
                 breathsPerMinute
             );
 
@@ -96,15 +100,16 @@ export class RespiratoryRateService implements IService {
         req: Request<
             { id: string; respiratoryRateId: string },
             {},
-            RespiratoryRatePayload
+            UpdateRespiratoryRatePayload
         >,
         res: Response
     ) {
         try {
             const { id, respiratoryRateId } = req.params;
-            const { breathsPerMinute } = req.body;
+            const { timeMeasured, breathsPerMinute } = req.body;
             const respiratoryRate = await this.respiratoryRateRepository.update(
                 respiratoryRateId,
+                timeMeasured ? new Date(timeMeasured) : undefined,
                 breathsPerMinute
             );
 

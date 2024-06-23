@@ -1,11 +1,11 @@
 abstract class VitalSign {
-    protected status: string = "";
+    public status: string = "";
 
     constructor(
-        protected readonly id: string,
-        protected name: string = "",
-        protected userId: string,
-        protected timeMeasured: Date
+        public userId: string,
+        public timeMeasured: Date,
+        public id?: string,
+        public name: string = ""
     ) {}
 
     abstract dataAsJson(): Json;

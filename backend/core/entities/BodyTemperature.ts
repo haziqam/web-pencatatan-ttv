@@ -2,14 +2,14 @@ export class BodyTemperature extends VitalSign {
     private static readonly NORMAL_THRESHOLD = [36.5, 37.5];
 
     constructor(
-        private celcius: number,
+        public celcius: number,
 
-        id: string,
         userId: string,
         timeMeasured: Date,
+        id?: string,
         status?: string
     ) {
-        super(id, "BODY_TEMPERATURE", userId, timeMeasured);
+        super(userId, timeMeasured, id, "BODY_TEMPERATURE");
 
         if (status) {
             this.status = status;
@@ -40,5 +40,10 @@ export class BodyTemperature extends VitalSign {
             status: this.status,
             celcius: this.celcius,
         };
+    }
+
+    static fromJson(json: Json): BodyTemperature {
+        const { celcius, id, userId, timeMeasured, status } = json;
+        return new BodyTemperature(celcius, id, userId, timeMeasured, status);
     }
 }

@@ -4,12 +4,12 @@ export class HeartBeat extends VitalSign {
     constructor(
         private beatsPerMinute: number,
 
-        id: string,
-        userId: string,
         timeMeasured: Date,
+        userId: string,
+        id?: string,
         status?: string
     ) {
-        super(id, "HEART_BEAT", userId, timeMeasured);
+        super(userId, timeMeasured, id, "HEART_BEAT");
 
         if (status) {
             this.status = status;

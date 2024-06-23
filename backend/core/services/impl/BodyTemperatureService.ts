@@ -2,7 +2,10 @@ import { ICache } from "../../../caches/ICache";
 import { IBodyTemperatureRepository } from "../../repositories/IBodyTemperatureRepository";
 import { IService } from "../IService";
 import { Express, NextFunction, Request, Response, Router } from "express";
-import { BodyTemperaturePayload } from "../schema/vitalSignSchema";
+import {
+    StoreBodyTemperaturePayload,
+    UpdateBodyTemperaturePayload,
+} from "../schema/vitalSignSchema";
 
 export class BodyTemperatureService implements IService {
     private router: Router;
@@ -66,14 +69,15 @@ export class BodyTemperatureService implements IService {
     }
 
     async store(
-        req: Request<{ id: string }, {}, BodyTemperaturePayload>,
+        req: Request<{ id: string }, {}, StoreBodyTemperaturePayload>,
         res: Response
     ) {
         try {
             const { id } = req.params;
-            const { celcius } = req.body;
+            const { timeMeasured, celcius } = req.body;
             const bodyTemperature = await this.bodyTemperatureRepository.store(
                 id,
+                new Date(timeMeasured),
                 celcius
             );
 
@@ -96,15 +100,16 @@ export class BodyTemperatureService implements IService {
         req: Request<
             { id: string; tempId: string },
             {},
-            BodyTemperaturePayload
+            UpdateBodyTemperaturePayload
         >,
         res: Response
     ) {
         try {
             const { id, tempId } = req.params;
-            const { celcius } = req.body;
+            const { timeMeasured, celcius } = req.body;
             const bodyTemperature = await this.bodyTemperatureRepository.update(
                 tempId,
+                timeMeasured ? new Date(timeMeasured) : undefined,
                 celcius
             );
 

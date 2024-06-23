@@ -2,7 +2,10 @@ import { ICache } from "../../../caches/ICache";
 import { IHeartBeatRepository } from "../../repositories/IHeartBeatRepository";
 import { IService } from "../IService";
 import { Express, NextFunction, Request, Response, Router } from "express";
-import { HeartBeatPayload } from "../schema/vitalSignSchema";
+import {
+    StoreHeartBeatPayload,
+    UpdateHeartBeatPayload,
+} from "../schema/vitalSignSchema";
 
 export class HeartBeatService implements IService {
     private router: Router;
@@ -63,14 +66,15 @@ export class HeartBeatService implements IService {
     }
 
     async store(
-        req: Request<{ id: string }, {}, HeartBeatPayload>,
+        req: Request<{ id: string }, {}, StoreHeartBeatPayload>,
         res: Response
     ) {
         try {
             const { id } = req.params;
-            const { beatsPerMinute } = req.body;
+            const { timeMeasured, beatsPerMinute } = req.body;
             const heartBeat = await this.heartBeatRepository.store(
                 id,
+                new Date(timeMeasured),
                 beatsPerMinute
             );
 
@@ -90,14 +94,19 @@ export class HeartBeatService implements IService {
     }
 
     async update(
-        req: Request<{ id: string; heartBeatId: string }, {}, HeartBeatPayload>,
+        req: Request<
+            { id: string; heartBeatId: string },
+            {},
+            UpdateHeartBeatPayload
+        >,
         res: Response
     ) {
         try {
             const { id, heartBeatId } = req.params;
-            const { beatsPerMinute } = req.body;
+            const { timeMeasured, beatsPerMinute } = req.body;
             const heartBeat = await this.heartBeatRepository.update(
                 heartBeatId,
+                timeMeasured ? new Date(timeMeasured) : undefined,
                 beatsPerMinute
             );
 

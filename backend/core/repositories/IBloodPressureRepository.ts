@@ -5,14 +5,16 @@ export interface IBloodPressureRepository {
 
     store(
         userId: string,
+        timeMeasured: Date,
         systole: number,
         diastole: number
     ): Promise<BloodPressure>;
 
     update(
         id: string,
-        systole: number | undefined,
-        diastole: number | undefined
+        timeMeasured?: Date,
+        systole?: number,
+        diastole?: number
     ): Promise<BloodPressure>;
 
     delete(id: string): Promise<void>;

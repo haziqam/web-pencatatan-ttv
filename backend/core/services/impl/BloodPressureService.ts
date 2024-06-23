@@ -75,9 +75,10 @@ export class BloodPressureService implements IService {
     ) {
         try {
             const { id } = req.params;
-            const { systole, diastole } = req.body;
+            const { timeMeasured, systole, diastole } = req.body;
             const bloodPressure = await this.bloodPressureRepository.store(
                 id,
+                new Date(timeMeasured),
                 systole,
                 diastole
             );
@@ -107,9 +108,10 @@ export class BloodPressureService implements IService {
     ) {
         try {
             const { id, bloodPressureId } = req.params;
-            const { systole, diastole } = req.body;
+            const { timeMeasured, systole, diastole } = req.body;
             const bloodPressure = await this.bloodPressureRepository.update(
                 bloodPressureId,
+                timeMeasured ? new Date(timeMeasured) : undefined,
                 systole,
                 diastole
             );

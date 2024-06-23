@@ -3,12 +3,12 @@ export class BloodPressure extends VitalSign {
         private systole: number,
         private diastole: number,
 
-        id: string,
-        userId: string,
         timeMeasured: Date,
+        userId: string,
+        id?: string,
         status?: string
     ) {
-        super(id, "BLOOD_PRESSURE", userId, timeMeasured);
+        super(userId, timeMeasured, id, "BLOOD_PRESSURE");
 
         if (status) {
             this.status = status;
