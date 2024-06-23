@@ -1,5 +1,7 @@
-import { RedisClientType } from "@redis/client";
+import * as redis from "redis";
 import { ICache } from "../../caches/ICache";
+
+export type RedisClientType = ReturnType<typeof redis.createClient>;
 
 export class Cache implements ICache {
     constructor(private client: RedisClientType) {}

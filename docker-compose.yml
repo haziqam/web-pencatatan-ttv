@@ -30,6 +30,7 @@ services:
             - "3000:${EXPRESS_PORT}"
         depends_on:
             - mongodb
+            - redis
         command: npm run dev
         develop:
             watch:
@@ -52,7 +53,7 @@ services:
         image: redis:latest
         container_name: redis
         ports:
-        - "6378:${REDIS_PORT}"
+            - "6378:${REDIS_PORT}"
 
 volumes:
     mongodb_data:
