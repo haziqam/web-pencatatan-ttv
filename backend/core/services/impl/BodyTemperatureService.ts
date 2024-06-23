@@ -15,14 +15,10 @@ export class BodyTemperatureService implements IService {
         private bodyTemperatureRepository: IBodyTemperatureRepository,
         private cache: ICache
     ) {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
     }
 
-    async cacheGetAll(
-        req: Request<{ id: string }>,
-        res: Response,
-        next: NextFunction
-    ) {
+    async cacheGetAll(req: Request, res: Response, next: NextFunction) {
         try {
             const { id } = req.params;
             const cachedBodyTemperatures = await this.cache.get(
@@ -33,7 +29,7 @@ export class BodyTemperatureService implements IService {
                 return next();
             }
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: JSON.parse(cachedBodyTemperatures),
             });
@@ -51,7 +47,7 @@ export class BodyTemperatureService implements IService {
                 v.dataAsJson()
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: bodyTemperaturesJson,
             });
@@ -81,7 +77,7 @@ export class BodyTemperatureService implements IService {
                 celcius
             );
 
-            res.send(201).json({
+            res.status(201).json({
                 message: "Success",
                 data: bodyTemperature.dataAsJson(),
             });
@@ -113,7 +109,7 @@ export class BodyTemperatureService implements IService {
                 celcius
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: bodyTemperature.dataAsJson(),
             });
@@ -133,7 +129,7 @@ export class BodyTemperatureService implements IService {
             const { id, tempId } = req.params;
             await this.bodyTemperatureRepository.delete(tempId);
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: null,
             });

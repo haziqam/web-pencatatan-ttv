@@ -11,7 +11,7 @@ export class VitalSignService implements IService {
         private vitalSignRepository: IVitalSignRepository,
         private cache: ICache
     ) {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
     }
 
     async cacheGetAll(
@@ -28,7 +28,7 @@ export class VitalSignService implements IService {
                 return next();
             }
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: JSON.parse(cachedVitalSigns),
             });
@@ -42,7 +42,7 @@ export class VitalSignService implements IService {
             const { id } = req.params;
             const vitalSigns = await this.vitalSignRepository.getAll(id);
             const vitalSignsJson = vitalSigns.map((v) => v.dataAsJson());
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: vitalSignsJson,
             });

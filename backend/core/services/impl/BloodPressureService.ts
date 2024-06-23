@@ -15,7 +15,7 @@ export class BloodPressureService implements IService {
         private bloodPressureRepository: IBloodPressureRepository,
         private cache: ICache
     ) {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
     }
 
     async cacheGetAll(
@@ -33,7 +33,7 @@ export class BloodPressureService implements IService {
                 return next();
             }
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: JSON.parse(cachedBloodPressures),
             });
@@ -52,7 +52,7 @@ export class BloodPressureService implements IService {
                 v.dataAsJson()
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: bloodPressuresJson,
             });
@@ -83,7 +83,7 @@ export class BloodPressureService implements IService {
                 diastole
             );
 
-            res.send(201).json({
+            res.status(201).json({
                 message: "Success",
                 data: bloodPressure.dataAsJson(),
             });
@@ -116,7 +116,7 @@ export class BloodPressureService implements IService {
                 diastole
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: bloodPressure.dataAsJson(),
             });
@@ -139,7 +139,7 @@ export class BloodPressureService implements IService {
             const { id, bloodPressureId } = req.params;
             await this.bloodPressureRepository.delete(bloodPressureId);
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: null,
             });

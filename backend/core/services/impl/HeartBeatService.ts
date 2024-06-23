@@ -15,7 +15,7 @@ export class HeartBeatService implements IService {
         private heartBeatRepository: IHeartBeatRepository,
         private cache: ICache
     ) {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
     }
 
     async cacheGetAll(
@@ -33,7 +33,7 @@ export class HeartBeatService implements IService {
                 return next();
             }
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: JSON.parse(cachedHeartBeats),
             });
@@ -48,7 +48,7 @@ export class HeartBeatService implements IService {
             const heartBeats = await this.heartBeatRepository.getAll(id);
             const heartBeatsJson = heartBeats.map((v) => v.dataAsJson());
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: heartBeatsJson,
             });
@@ -78,7 +78,7 @@ export class HeartBeatService implements IService {
                 beatsPerMinute
             );
 
-            res.send(201).json({
+            res.status(201).json({
                 message: "Success",
                 data: heartBeat.dataAsJson(),
             });
@@ -110,7 +110,7 @@ export class HeartBeatService implements IService {
                 beatsPerMinute
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: heartBeat.dataAsJson(),
             });
@@ -133,7 +133,7 @@ export class HeartBeatService implements IService {
             const { id, heartBeatId } = req.params;
             await this.heartBeatRepository.delete(heartBeatId);
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: null,
             });

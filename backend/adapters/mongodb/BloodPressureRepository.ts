@@ -10,14 +10,14 @@ export class BloodPressureRepository implements IBloodPressureRepository {
             {
                 $match: {
                     name: "BLOOD_PRESSURE",
-                    userId: new ObjectId(userId),
+                    userId: userId,
                 },
             },
             {
                 $project: {
                     _id: 0,
                     id: { $toString: "$_id" },
-                    userId: { $toString: "$userId" },
+                    userId: 1,
                     timeMeasured: 1,
                     status: 1,
                     systole: 1,
@@ -66,25 +66,43 @@ export class BloodPressureRepository implements IBloodPressureRepository {
         systole?: number | undefined,
         diastole?: number | undefined
     ): Promise<BloodPressure> {
-        const result = await this.collection.findOneAndUpdate(
-            { _id: new ObjectId(id) },
-            { $set: { timeMeasured, systole, diastole } },
-            { ignoreUndefined: true, returnDocument: "after" }
-        );
+        const bloodPressure = await this.collection.findOne({
+            _id: new ObjectId(id),
+        });
 
-        if (!result) {
+        if (!bloodPressure) {
             throw new Error(
                 "Id not found. Cannot update BloodPressure document"
             );
         }
 
+        const newSystole = systole ?? bloodPressure.systole;
+        const newDiastole = diastole ?? bloodPressure.diastole;
+        const newStatus = BloodPressure.calculateStatus(
+            newSystole,
+            newDiastole
+        );
+        const newTimeMeasured = timeMeasured ?? bloodPressure.timeMeasured;
+
+        await this.collection.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    timeMeasured: newTimeMeasured,
+                    systole: newSystole,
+                    diastole: newDiastole,
+                    status: newStatus,
+                },
+            },
+            { ignoreUndefined: true }
+        );
+
         return new BloodPressure(
-            result.systole,
-            result.diastole,
-            result.userId,
-            result.timeMeasured,
-            result.id,
-            result.status
+            newSystole,
+            newDiastole,
+            bloodPressure.userId,
+            newTimeMeasured,
+            id
         );
     }
 

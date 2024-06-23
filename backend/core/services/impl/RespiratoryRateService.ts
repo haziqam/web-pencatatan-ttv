@@ -15,7 +15,7 @@ export class RespiratoryRateService implements IService {
         private respiratoryRateRepository: IRespiratoryRateRepository,
         private cache: ICache
     ) {
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
     }
 
     async cacheGetAll(
@@ -33,7 +33,7 @@ export class RespiratoryRateService implements IService {
                 return next();
             }
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: JSON.parse(cachedRespiratoryRates),
             });
@@ -51,7 +51,7 @@ export class RespiratoryRateService implements IService {
                 v.dataAsJson()
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: respiratoryRatesJson,
             });
@@ -81,7 +81,7 @@ export class RespiratoryRateService implements IService {
                 breathsPerMinute
             );
 
-            res.send(201).json({
+            res.status(201).json({
                 message: "Success",
                 data: respiratoryRate.dataAsJson(),
             });
@@ -113,7 +113,7 @@ export class RespiratoryRateService implements IService {
                 breathsPerMinute
             );
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: respiratoryRate.dataAsJson(),
             });
@@ -136,7 +136,7 @@ export class RespiratoryRateService implements IService {
             const { id, respiratoryRateId } = req.params;
             await this.respiratoryRateRepository.delete(respiratoryRateId);
 
-            res.send(200).json({
+            res.status(200).json({
                 message: "Success",
                 data: null,
             });

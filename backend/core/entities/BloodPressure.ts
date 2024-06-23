@@ -16,27 +16,28 @@ export class BloodPressure extends VitalSign {
         if (status) {
             this.status = status;
         } else {
-            this.calculateStatus();
+            this.status = BloodPressure.calculateStatus(
+                this.systole,
+                this.diastole
+            );
         }
     }
 
-    private calculateStatus() {
-        const sys = this.systole;
-        const dia = this.diastole;
-
+    static calculateStatus(sys: number, dia: number): string {
         if (sys < 90 || dia < 60) {
-            this.status = "HYPOTENSION";
+            return "HYPOTENSION";
         } else if (sys >= 90 && sys <= 119 && dia >= 60 && dia <= 79) {
-            this.status = "NORMAL";
+            return "NORMAL";
         } else if ((sys >= 120 && sys <= 139) || (dia >= 80 && dia <= 89)) {
-            this.status = "PRE-HYPERTENSION";
+            return "PRE-HYPERTENSION";
         } else if ((sys >= 140 && sys <= 159) || (dia >= 90 && dia <= 99)) {
-            this.status = "STAGE 1 HYPERTENSION";
+            return "STAGE 1 HYPERTENSION";
         } else if ((sys >= 160 && sys <= 180) || (dia >= 100 && dia <= 120)) {
-            this.status = "STAGE 2 HYPERTENSION";
+            return "STAGE 2 HYPERTENSION";
         } else if (sys > 180 || dia > 120) {
-            this.status = "HYPERTENSIVE CRISIS";
+            return "HYPERTENSIVE CRISIS";
         }
+        return "UNKNOWN";
     }
 
     dataAsJson(): Json {

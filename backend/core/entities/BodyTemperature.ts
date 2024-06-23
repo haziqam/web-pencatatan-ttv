@@ -17,21 +17,18 @@ export class BodyTemperature extends VitalSign {
         if (status) {
             this.status = status;
         } else {
-            this.calculateStatus();
+            this.status = BodyTemperature.calculateStatus(this.celcius);
         }
     }
 
-    private calculateStatus() {
+    static calculateStatus(celcius: number): string {
         const threshold = BodyTemperature.NORMAL_THRESHOLD;
-        if (this.celcius < threshold[0]) {
-            this.status = "LOW";
-        } else if (
-            this.celcius >= threshold[0] &&
-            this.celcius <= threshold[1]
-        ) {
-            this.status = "NORMAL";
+        if (celcius < threshold[0]) {
+            return "LOW";
+        } else if (celcius >= threshold[0] && celcius <= threshold[1]) {
+            return "NORMAL";
         } else {
-            this.status = "HIGH";
+            return "HIGH";
         }
     }
 
@@ -44,10 +41,5 @@ export class BodyTemperature extends VitalSign {
             status: this.status,
             celcius: this.celcius,
         };
-    }
-
-    static fromJson(json: Json): BodyTemperature {
-        const { celcius, id, userId, timeMeasured, status } = json;
-        return new BodyTemperature(celcius, id, userId, timeMeasured, status);
     }
 }

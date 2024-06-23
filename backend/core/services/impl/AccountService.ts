@@ -18,7 +18,7 @@ export class AccountService implements IService {
         private cache: ICache
     ) {
         dotenv.config();
-        this.router = Router();
+        this.router = Router({ mergeParams: true });
         this.saltRounds = parseInt(process.env.SALT_ROUNDS!, 10);
         this.jwtSecret = process.env.JWT_SECRET_KEY!;
     }

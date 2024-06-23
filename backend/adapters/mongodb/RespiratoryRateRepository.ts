@@ -10,14 +10,14 @@ export class RespiratoryRateRepository implements IRespiratoryRateRepository {
             {
                 $match: {
                     name: "RESPIRATORY_RATE",
-                    userId: new ObjectId(userId),
+                    userId: userId,
                 },
             },
             {
                 $project: {
                     _id: 0,
                     id: { $toString: "$_id" },
-                    userId: { $toString: "$userId" },
+                    userId: 1,
                     timeMeasured: 1,
                     status: 1,
                     breathsPerMinute: 1,
@@ -61,24 +61,38 @@ export class RespiratoryRateRepository implements IRespiratoryRateRepository {
         timeMeasured?: Date | undefined,
         breathsPerMinute?: number | undefined
     ): Promise<RespiratoryRate> {
-        const result = await this.collection.findOneAndUpdate(
-            { _id: new ObjectId(id) },
-            { $set: { timeMeasured, breathsPerMinute } },
-            { ignoreUndefined: true, returnDocument: "after" }
-        );
+        const respiratoryRate = await this.collection.findOne({
+            _id: new ObjectId(id),
+        });
 
-        if (!result) {
+        if (!respiratoryRate) {
             throw new Error(
                 "Id not found. Cannot update RespiratoryRate document"
             );
         }
 
+        const newBreathsPerMinute =
+            breathsPerMinute ?? respiratoryRate.breathsPerMinute;
+        const newStatus = RespiratoryRate.calculateStatus(newBreathsPerMinute);
+        const newTimeMeasured = timeMeasured ?? respiratoryRate.timeMeasured;
+
+        await this.collection.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    timeMeasured: newTimeMeasured,
+                    breathsPerMinute: newBreathsPerMinute,
+                    status: newStatus,
+                },
+            },
+            { ignoreUndefined: true }
+        );
+
         return new RespiratoryRate(
-            result.breathsPerMinute,
-            result.userId,
-            result.timeMeasured,
-            result.id,
-            result.status
+            newBreathsPerMinute,
+            respiratoryRate.userId,
+            newTimeMeasured,
+            id
         );
     }
     async delete(id: string): Promise<void> {

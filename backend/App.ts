@@ -71,6 +71,7 @@ export class App {
         // Express
         const server = express();
         const port = process.env.EXPRESS_PORT ?? 3000;
+        server.use(express.json());
         server.use(bodyParser.json());
         server.use(cookieParser());
 

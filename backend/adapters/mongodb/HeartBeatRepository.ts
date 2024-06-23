@@ -10,14 +10,14 @@ export class HeartBeatRepository implements IHeartBeatRepository {
             {
                 $match: {
                     name: "HEART_BEAT",
-                    userId: new ObjectId(userId),
+                    userId: userId,
                 },
             },
             {
                 $project: {
                     _id: 0,
                     id: { $toString: "$_id" },
-                    userId: { $toString: "$userId" },
+                    userId: 1,
                     timeMeasured: 1,
                     status: 1,
                     beatsPerMinute: 1,
@@ -57,22 +57,35 @@ export class HeartBeatRepository implements IHeartBeatRepository {
         timeMeasured?: Date | undefined,
         beatsPerMinute?: number | undefined
     ): Promise<HeartBeat> {
-        const result = await this.collection.findOneAndUpdate(
-            { _id: new ObjectId(id) },
-            { $set: { timeMeasured, beatsPerMinute } },
-            { ignoreUndefined: true, returnDocument: "after" }
-        );
+        const heartBeat = await this.collection.findOne({
+            _id: new ObjectId(id),
+        });
 
-        if (!result) {
+        if (!heartBeat) {
             throw new Error("Id not found. Cannot update HeartBeat document");
         }
 
+        const newBeatsPerMinute = beatsPerMinute ?? heartBeat.beatsPerMinute;
+        const newStatus = HeartBeat.calculateStatus(newBeatsPerMinute);
+        const newTimeMeasured = timeMeasured ?? heartBeat.timeMeasured;
+
+        await this.collection.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    timeMeasured: newTimeMeasured,
+                    beatsPerMinute: newBeatsPerMinute,
+                    status: newStatus,
+                },
+            },
+            { ignoreUndefined: true }
+        );
+
         return new HeartBeat(
-            result.beatsPerMinute,
-            result.userId,
-            result.timeMeasured,
-            result.id,
-            result.status
+            newBeatsPerMinute,
+            heartBeat.userId,
+            newTimeMeasured,
+            id
         );
     }
 

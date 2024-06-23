@@ -9,14 +9,14 @@ export class BodyTemperatureRepository implements IBodyTemperatureRepository {
             {
                 $match: {
                     name: "BODY_TEMPERATURE",
-                    userId: new ObjectId(userId),
+                    userId: userId,
                 },
             },
             {
                 $project: {
                     _id: 0,
                     id: { $toString: "$_id" },
-                    userId: { $toString: "$userId" },
+                    userId: 1,
                     timeMeasured: 1,
                     status: 1,
                     celcius: 1,
@@ -60,24 +60,37 @@ export class BodyTemperatureRepository implements IBodyTemperatureRepository {
         timeMeasured?: Date | undefined,
         celcius?: number | undefined
     ): Promise<BodyTemperature> {
-        const result = await this.collection.findOneAndUpdate(
-            { _id: new ObjectId(id) },
-            { $set: { timeMeasured, celcius } },
-            { ignoreUndefined: true, returnDocument: "after" }
-        );
+        const bodyTemperature = await this.collection.findOne({
+            _id: new ObjectId(id),
+        });
 
-        if (!result) {
+        if (!bodyTemperature) {
             throw new Error(
                 "Id not found. Cannot update BodyTemperature document"
             );
         }
 
+        const newCelcius = celcius ?? bodyTemperature.celcius;
+        const newStatus = BodyTemperature.calculateStatus(newCelcius);
+        const newTimeMeasured = timeMeasured ?? bodyTemperature.timeMeasured;
+
+        await this.collection.updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    timeMeasured: newTimeMeasured,
+                    celcius: newCelcius,
+                    status: newStatus,
+                },
+            },
+            { ignoreUndefined: true }
+        );
+
         return new BodyTemperature(
-            result.celcius,
-            result.userId,
-            result.timeMeasured,
-            result.id,
-            result.status
+            newCelcius,
+            bodyTemperature.userId,
+            newTimeMeasured,
+            id
         );
     }
 

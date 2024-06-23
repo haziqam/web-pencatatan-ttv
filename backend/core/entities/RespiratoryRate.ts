@@ -17,21 +17,23 @@ export class RespiratoryRate extends VitalSign {
         if (status) {
             this.status = status;
         } else {
-            this.calculateStatus();
+            this.status = RespiratoryRate.calculateStatus(
+                this.breathsPerMinute
+            );
         }
     }
 
-    private calculateStatus() {
+    static calculateStatus(breathsPerMinute: number): string {
         const threshold = RespiratoryRate.NORMAL_THRESHOLD;
-        if (this.breathsPerMinute < threshold[0]) {
-            this.status = "LOW";
+        if (breathsPerMinute < threshold[0]) {
+            return "LOW";
         } else if (
-            this.breathsPerMinute >= threshold[0] &&
-            this.breathsPerMinute <= threshold[1]
+            breathsPerMinute >= threshold[0] &&
+            breathsPerMinute <= threshold[1]
         ) {
-            this.status = "NORMAL";
+            return "NORMAL";
         } else {
-            this.status = "HIGH";
+            return "HIGH";
         }
     }
 

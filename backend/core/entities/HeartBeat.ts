@@ -17,21 +17,21 @@ export class HeartBeat extends VitalSign {
         if (status) {
             this.status = status;
         } else {
-            this.calculateStatus();
+            this.status = HeartBeat.calculateStatus(beatsPerMinute);
         }
     }
 
-    private calculateStatus() {
+    static calculateStatus(beatsPerMinute: number): string {
         const threshold = HeartBeat.NORMAL_THRESHOLD;
-        if (this.beatsPerMinute < threshold[0]) {
-            this.status = "LOW";
+        if (beatsPerMinute < threshold[0]) {
+            return "LOW";
         } else if (
-            this.beatsPerMinute >= threshold[0] &&
-            this.beatsPerMinute <= threshold[1]
+            beatsPerMinute >= threshold[0] &&
+            beatsPerMinute <= threshold[1]
         ) {
-            this.status = "NORMAL";
+            return "NORMAL";
         } else {
-            this.status = "HIGH";
+            return "HIGH";
         }
     }
 
