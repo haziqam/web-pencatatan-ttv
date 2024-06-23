@@ -10,7 +10,7 @@ dotenv.config()
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vue(), vueJsx(), vueDevTools()],
+  plugins: [vue()],
   server: {
     host: '0.0.0.0',
     port: parseInt(process.env.VUE_PORT ?? '5173', 10)
