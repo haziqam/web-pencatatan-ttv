@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import bodyParser from "body-parser";
 import cookieParser from "cookie-parser";
+import cors from "cors";
 import { MongoClient } from "mongodb";
 import * as redis from "redis";
 import { UserRepository } from "./adapters/mongodb/UserRepository";
@@ -75,6 +76,12 @@ export class App {
         server.use(express.json());
         server.use(bodyParser.json());
         server.use(cookieParser());
+        const frontendPort = process.env.VUE_PORT ?? 5173;
+        server.use(
+            cors({
+                origin: `http://localhost:${frontendPort}`,
+            })
+        );
 
         // Services
         const services: IService[] = [
