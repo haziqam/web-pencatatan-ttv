@@ -13,7 +13,6 @@ export function validateRequest(schema: ZodSchema) {
                     errors: e.errors,
                 });
             }
-            next(e);
         }
     };
 }
