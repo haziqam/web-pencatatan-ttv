@@ -2,9 +2,11 @@ FROM node:22-alpine
 
 WORKDIR /usr/src/app
 
-COPY ./package.json ./package-lock.json ./
+RUN npm install -g pnpm
 
-RUN npm cache clean --force && rm -rf node_modules && npm install
+COPY ./package.json ./
+
+RUN rm -rf node_modules && pnpm install
 
 COPY . .
 
