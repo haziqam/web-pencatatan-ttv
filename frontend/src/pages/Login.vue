@@ -9,26 +9,28 @@
           </p>
           <form ref="formRef" aria-label="Login form" @submit.prevent="login">
             <fieldset class="form-group" aria-required="true">
+              <label class="form-label">Email</label>
               <div class="error-messages">
                 {{ validationErrors.email }}
               </div>
               <input
                 v-model="form.email"
                 aria-label="Email"
-                class="form-control form-control-lg"
+                class="form-control"
                 type="email"
                 required
                 placeholder="Email"
               />
             </fieldset>
             <fieldset class="form-group">
+              <label class="form-label">Email</label>
               <div class="error-messages">
                 {{ validationErrors.password }}
               </div>
               <input
                 v-model="form.password"
                 aria-label="Password"
-                class="form-control form-control-lg"
+                class="form-control"
                 type="password"
                 required
                 placeholder="Password"
@@ -81,10 +83,7 @@ async function login() {
 
     const response = await axios.post<LoginResponse>(
       "http://localhost:3000/users/auth/login",
-      {
-        email: form.email,
-        password: form.password,
-      }
+      form
     );
 
     const userStore = useUserStore();

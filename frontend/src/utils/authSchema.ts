@@ -11,6 +11,14 @@ export const registerSchema = z.object({
 
 export type RegisterRequest = z.infer<typeof registerSchema>;
 
+export type RegisterResponse = {
+  message: string;
+  errors?: string;
+  data?: {
+    id: string;
+  };
+};
+
 export const loginSchema = z.object({
   email: z.string().email({ message: "Invalid email" }),
   password: z
@@ -20,10 +28,4 @@ export const loginSchema = z.object({
 
 export type LoginRequest = z.infer<typeof loginSchema>;
 
-export type LoginResponse = {
-  message: string;
-  errors?: string;
-  data?: {
-    id: string;
-  };
-};
+export type LoginResponse = RegisterResponse;
