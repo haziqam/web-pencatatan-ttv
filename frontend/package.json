@@ -10,12 +10,14 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@primevue/themes": "4.0.0-rc.2",
     "axios": "^1.7.2",
     "dotenv": "^16.4.5",
     "insane": "^2.6.2",
     "marked": "^12.0.0",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.1",
+    "primevue": "4.0.0-rc.2",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "zod": "^3.23.8"
