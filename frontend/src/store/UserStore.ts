@@ -12,7 +12,5 @@ export const useUserStore = defineStore("user", {
       this.userId = undefined;
     },
   },
-  getters: {
-    getUserId: (state) => state.userId,
-  },
+  persist: true,
 });

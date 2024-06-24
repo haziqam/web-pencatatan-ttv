@@ -56,15 +56,19 @@ import { reactive, ref } from "vue";
 import axios from "axios";
 import { useRouter, RouterLink } from "vue-router";
 import { ZodError } from "zod";
-import { LoginRequest, LoginResponse, loginSchema } from "src/types/authSchema";
+import { LoginRequest, LoginResponse, loginSchema } from "src/utils/authSchema";
 import { useUserStore } from "src/store/UserStore";
+import {
+  ErrorMessage,
+  parseValidationError,
+} from "src/utils/parseValidationError";
 
 const form: LoginRequest = reactive({
   email: "",
   password: "",
 });
 
-const validationErrors = ref<Partial<LoginRequest>>({});
+const validationErrors = ref<ErrorMessage<LoginRequest>>({});
 const requestError = ref<string | null>(null);
 const router = useRouter();
 
@@ -94,26 +98,11 @@ async function login() {
         responseData.errors ?? ""
       }`;
     } else if (err instanceof ZodError) {
-      validationErrors.value = parseLoginErrors(JSON.parse(err.message));
+      validationErrors.value = parseValidationError(form, err.errors);
     } else {
       requestError.value =
         "An unexpected error occurred. Please try again later.";
     }
   }
-}
-
-function parseLoginErrors(validationErrors: any[]): Partial<LoginRequest> {
-  const result: Partial<LoginRequest> = {};
-
-  validationErrors.forEach((error) => {
-    const path = error.path[0];
-    const message = error.message;
-
-    if (path === "email" || path === "password") {
-      result[path as keyof LoginRequest] = message;
-    }
-  });
-
-  return result;
 }
 </script>
