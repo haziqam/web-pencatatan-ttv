@@ -1,11 +1,12 @@
 <template>
-  <div class="home-page">
-    <div class="container page">
-      <div class="row">
-        <div class="col-md-9">Home..</div>
-      </div>
-    </div>
-  </div>
+  <Suspense>
+    <template #fallback> Loading...</template>
+    <template #default>
+      <Ttv />
+    </template>
+  </Suspense>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Ttv from "src/components/Ttv.vue";
+</script>

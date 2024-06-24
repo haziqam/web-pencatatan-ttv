@@ -80,6 +80,7 @@ export class App {
         server.use(
             cors({
                 origin: `http://localhost:${frontendPort}`,
+                credentials: true,
             })
         );
 

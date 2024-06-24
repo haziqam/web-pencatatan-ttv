@@ -1,3 +1,4 @@
+import { VitalSign } from "src/types/VitalSign";
 import { z } from "zod";
 
 export const storeBodyTemperatureSchema = z.object({
@@ -56,3 +57,8 @@ export const updateRespiratoryRateSchema = storeRespiratoryRateSchema.partial();
 export type UpdateRespiratoryRateRequest = z.infer<
   typeof updateRespiratoryRateSchema
 >;
+
+export type VitalSignResponse = {
+  message: string;
+  data?: VitalSign[];
+};

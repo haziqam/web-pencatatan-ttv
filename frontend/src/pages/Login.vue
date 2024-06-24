@@ -23,7 +23,7 @@
               />
             </fieldset>
             <fieldset class="form-group">
-              <label class="form-label">Email</label>
+              <label class="form-label">Password</label>
               <div class="error-messages">
                 {{ validationErrors.password }}
               </div>
@@ -83,7 +83,8 @@ async function login() {
 
     const response = await axios.post<LoginResponse>(
       "http://localhost:3000/users/auth/login",
-      form
+      form,
+      { withCredentials: true }
     );
 
     const userStore = useUserStore();
