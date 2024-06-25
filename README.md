@@ -38,16 +38,16 @@ Reference: https://www.honestdocs.id/tanda-tanda-vital-ttv-pemeriksaan-nilai-nor
 
 2. Run the app using docker
 
-    ### How to run
-
-    ```
-    docker compose up
-    ```
-
-    ### How to rebuild the image
+    ### Build the image
 
     ```
     docker compose build
+    ```
+
+    ### Run the container
+
+    ```
+    docker compose up
     ```
 
     ### How to run with hot reload - for development (beware of docker lock file: https://github.com/docker/compose/issues/11069)
@@ -56,13 +56,25 @@ Reference: https://www.honestdocs.id/tanda-tanda-vital-ttv-pemeriksaan-nilai-nor
     docker compose watch
     ```
 
+3. Ensure all frontend and backend are working
+   ![backend](./img/backend.png)
+   ![frontend](./img/frontend.png)
+
+4. Access page at http://localhost:5173
+
+5. Make an account (you can use dummy data)
+
+6. Login
+
+7. Play around with the app
+
 ## Preview
 
-<img src="./img/register.png">
-<img src="./img/login.png">
-<img src="./img/homepage.png">
-<img src="./img/homepage2.png">
-<img src="./img/form.png">
+![](./img/register.png)
+![](./img/login.png)
+![](./img/homepage.png)
+![](./img/homepage2.png)
+![](./img/form.png)
 
 ## Credits
 
