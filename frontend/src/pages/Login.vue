@@ -98,7 +98,6 @@ import {
 } from "src/utils/parseValidationError";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
-import Card from "primevue/card";
 
 const form: LoginRequest = reactive({
   email: "",

@@ -20,6 +20,7 @@
           optionLabel="label"
           placeholder="Select a Vital Sign"
           class="w-full mb-6"
+          :style="{ width: '80%' }"
         />
       </div>
       <div>
@@ -28,34 +29,31 @@
         </label>
       </div>
       <DatePicker
-        :style="{ marginBottom: '10px' }"
+        :style="{ marginBottom: '10px', width: '80%' }"
         id="datepicker-24h"
         v-model="localVitalSign.timeMeasured"
         showTime
         dateFormat="dd/mm/yy"
         hourFormat="24"
       />
-      <!-- Other input fields based on selected vital sign -->
       <div v-if="localVitalSign.name === 'BLOOD_PRESSURE'">
         <div>
           <label for="systole" class="font-bold block mb-2"> Systole </label>
         </div>
-        <input
-          :style="{ marginBottom: '10px' }"
+        <InputText
+          :style="{ marginBottom: '10px', width: '80%' }"
           id="systole"
           v-model="localVitalSign.systole"
           type="number"
-          class="p-inputtext p-component"
         />
         <div>
           <label for="diastole" class="font-bold block mb-2"> Diastole </label>
         </div>
-        <input
-          :style="{ marginBottom: '10px' }"
+        <InputText
+          :style="{ marginBottom: '10px', width: '80%' }"
           id="diastole"
           v-model="localVitalSign.diastole"
           type="number"
-          class="p-inputtext p-component"
         />
       </div>
       <div v-if="localVitalSign.name === 'BODY_TEMPERATURE'">
@@ -64,13 +62,12 @@
             Temperature (C)
           </label>
         </div>
-        <input
-          :style="{ marginBottom: '10px' }"
+        <InputText
+          :style="{ marginBottom: '10px', width: '80%' }"
           id="celcius"
           v-model="localVitalSign.celcius"
           type="number"
           step="0.1"
-          class="p-inputtext p-component"
         />
       </div>
       <div v-if="localVitalSign.name === 'HEART_BEAT'">
@@ -79,12 +76,11 @@
             Beats Per Minute
           </label>
         </div>
-        <input
-          :style="{ marginBottom: '10px' }"
+        <InputText
+          :style="{ marginBottom: '10px', width: '80%' }"
           id="beatsPerMinute"
           v-model="localVitalSign.beatsPerMinute"
           type="number"
-          class="p-inputtext p-component"
         />
       </div>
       <div v-if="localVitalSign.name === 'RESPIRATORY_RATE'">
@@ -93,12 +89,11 @@
             Breaths Per Minute
           </label>
         </div>
-        <input
-          :style="{ marginBottom: '10px' }"
+        <InputText
+          :style="{ marginBottom: '10px', width: '80%' }"
           id="breathsPerMinute"
           v-model="localVitalSign.breathsPerMinute"
           type="number"
-          class="p-inputtext p-component"
         />
       </div>
     </div>
@@ -125,6 +120,7 @@ import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
 import Select from "primevue/select";
+import InputText from "primevue/inputtext";
 import { VitalSign } from "src/types/VitalSign";
 
 const props = defineProps<{

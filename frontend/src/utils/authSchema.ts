@@ -5,7 +5,7 @@ export const registerSchema = z.object({
   password: z.string().min(6),
   firstName: z.string().min(1),
   lastName: z.string().min(0),
-  dateOfBirth: z.string().date(),
+  dateOfBirth: z.date(),
   sex: z.enum(["MALE", "FEMALE"]),
 });
 
