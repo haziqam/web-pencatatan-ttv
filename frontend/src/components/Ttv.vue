@@ -1,20 +1,27 @@
 <template>
   <div class="card">
-    <Toolbar class="mb-6">
-      <template #start>
-        <Button label="New" icon="pi pi-plus" severity="success" class="mr-2" />
-      </template>
+    <div :style="{ marginBottom: '10px' }">
+      <Toolbar class="mb-6">
+        <template #start>
+          <Button
+            label="New"
+            icon="pi pi-plus"
+            severity="success"
+            class="mr-2"
+          />
+        </template>
 
-      <template #end>
-        <Button
-          label="Logout"
-          icon="pi pi-sign-out"
-          severity="danger"
-          class="mr-2"
-          @click="logout"
-        />
-      </template>
-    </Toolbar>
+        <template #end>
+          <Button
+            label="Logout"
+            icon="pi pi-sign-out"
+            severity="danger"
+            class="mr-2"
+            @click="logout"
+          />
+        </template>
+      </Toolbar>
+    </div>
     <DataTable
       :value="vitalSigns"
       v-model:expandedRows="expandedRows"
@@ -70,6 +77,7 @@
         </label>
       </div>
       <DatePicker
+        :style="{ marginBottom: '10px' }"
         id="datepicker-24h"
         v-model="selectedVitalSign!.timeMeasured"
         showTime
@@ -77,15 +85,21 @@
         hourFormat="24"
       />
       <div v-if="selectedVitalSign!.name === 'BLOOD_PRESSURE'">
-        <label for="systole" class="font-bold block mb-2"> Systole </label>
+        <div>
+          <label for="systole" class="font-bold block mb-2"> Systole </label>
+        </div>
         <input
+          :style="{ marginBottom: '10px' }"
           id="systole"
           v-model="selectedVitalSign!.systole"
           type="number"
           class="p-inputtext p-component"
         />
-        <label for="diastole" class="font-bold block mb-2"> Diastole </label>
+        <div>
+          <label for="diastole" class="font-bold block mb-2"> Diastole </label>
+        </div>
         <input
+          :style="{ marginBottom: '10px' }"
           id="diastole"
           v-model="selectedVitalSign!.diastole"
           type="number"
@@ -93,10 +107,13 @@
         />
       </div>
       <div v-if="selectedVitalSign!.name === 'BODY_TEMPERATURE'">
-        <label for="celcius" class="font-bold block mb-2">
-          Temperature (C)
-        </label>
+        <div>
+          <label for="celcius" class="font-bold block mb-2">
+            Temperature (C)
+          </label>
+        </div>
         <input
+          :style="{ marginBottom: '10px' }"
           id="celcius"
           v-model="selectedVitalSign!.celcius"
           type="number"
@@ -105,10 +122,13 @@
         />
       </div>
       <div v-if="selectedVitalSign!.name === 'HEART_BEAT'">
-        <label for="beatsPerMinute" class="font-bold block mb-2">
-          Beats Per Minute
-        </label>
+        <div>
+          <label for="beatsPerMinute" class="font-bold block mb-2">
+            Beats Per Minute
+          </label>
+        </div>
         <input
+          :style="{ marginBottom: '10px' }"
           id="beatsPerMinute"
           v-model="selectedVitalSign!.beatsPerMinute"
           type="number"
@@ -116,10 +136,13 @@
         />
       </div>
       <div v-if="selectedVitalSign!.name === 'RESPIRATORY_RATE'">
-        <label for="breathsPerMinute" class="font-bold block mb-2">
-          Breaths Per Minute
-        </label>
+        <div>
+          <label for="breathsPerMinute" class="font-bold block mb-2">
+            Breaths Per Minute
+          </label>
+        </div>
         <input
+          :style="{ marginBottom: '10px' }"
           id="breathsPerMinute"
           v-model="selectedVitalSign!.breathsPerMinute"
           type="number"
@@ -127,7 +150,7 @@
         />
       </div>
     </div>
-    <div class="flex justify-end gap-2">
+    <div :style="{ display: 'flex', marginTop: '10px', gap: '15px' }">
       <Button
         type="button"
         label="Cancel"
@@ -202,14 +225,7 @@ async function logout(): Promise<void> {
 
 async function handleDelete(vitalSign: VitalSign): Promise<void> {
   const raw = toRaw(vitalSign);
-  const resourceName =
-    raw.name == "BLOOD_PRESSURE"
-      ? "blood-pressures"
-      : raw.name == "BODY_TEMPERATURE"
-      ? "body-temperatures"
-      : raw.name == "HEART_BEAT"
-      ? "heart-beats"
-      : "respiratory-rates";
+  const resourceName = getResourceName(raw);
 
   try {
     const userId = userStore.userId;
@@ -232,14 +248,7 @@ function handleEdit(vitalSign: VitalSign) {
 async function saveChanges() {
   if (selectedVitalSign.value) {
     const raw = toRaw(selectedVitalSign.value);
-    const resourceName =
-      raw.name == "BLOOD_PRESSURE"
-        ? "blood-pressures"
-        : raw.name == "BODY_TEMPERATURE"
-        ? "body-temperatures"
-        : raw.name == "HEART_BEAT"
-        ? "heart-beats"
-        : "respiratory-rates";
+    const resourceName = getResourceName(raw);
 
     try {
       const userId = userStore.userId;
@@ -271,14 +280,7 @@ function notCommonKey(key: any) {
   return !common.includes(key);
 }
 
-function reformatKey(
-  key:
-    | "celcius"
-    | "beatsPerMinute"
-    | "breathsPerMinute"
-    | "systole"
-    | "diastole"
-) {
+function reformatKey(key: vitalSignKey) {
   const dict = {
     celcius: "Temperature (C)",
     beatsPerMinute: "Beats Per Minute",
@@ -287,5 +289,22 @@ function reformatKey(
     diastole: "Diastole",
   };
   return dict[key];
+}
+
+type vitalSignKey =
+  | "celcius"
+  | "beatsPerMinute"
+  | "breathsPerMinute"
+  | "systole"
+  | "diastole";
+
+function getResourceName(vitalSign: VitalSign): string {
+  return vitalSign.name == "BLOOD_PRESSURE"
+    ? "blood-pressures"
+    : vitalSign.name == "BODY_TEMPERATURE"
+    ? "body-temperatures"
+    : vitalSign.name == "HEART_BEAT"
+    ? "heart-beats"
+    : "respiratory-rates";
 }
 </script>
