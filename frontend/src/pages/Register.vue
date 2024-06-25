@@ -148,7 +148,6 @@
 
 <script setup lang="ts">
 import { reactive, ref } from "vue";
-import axios from "axios";
 import { useRouter, RouterLink } from "vue-router";
 import { ZodError, date } from "zod";
 import {
@@ -164,6 +163,8 @@ import InputText from "primevue/inputtext";
 import Select from "primevue/select";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
+import axios from "axios";
+import axiosInstance from "src/axios/axiosInstance";
 
 const form: RegisterRequest = reactive({
   email: "",
@@ -191,7 +192,7 @@ async function register() {
       ["dateOfBirth"]: formatDateToYYYYMMDD(form.dateOfBirth),
     };
 
-    const response = await axios.post<RegisterResponse>(
+    const response = await axiosInstance.post<RegisterResponse>(
       "http://localhost:3000/users/auth/register",
       formToPost
     );

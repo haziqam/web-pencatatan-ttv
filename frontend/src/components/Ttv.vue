@@ -98,7 +98,8 @@
 </template>
 
 <script setup lang="ts">
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
+import axiosInstance from "src/axios/axiosInstance";
 import { useUserStore } from "src/store/UserStore";
 import { VitalSign } from "src/types/VitalSign";
 import { VitalSignResponse } from "src/utils/vitalSignSchema";
@@ -141,7 +142,7 @@ try {
 
 async function fetchVitalSigns(): Promise<VitalSign[]> {
   const userId = userStore.userId;
-  const response = await axios.get<VitalSignResponse>(
+  const response = await axiosInstance.get<VitalSignResponse>(
     `http://localhost:3000/users/${userId}/vital-signs`,
     { withCredentials: true }
   );
@@ -150,9 +151,13 @@ async function fetchVitalSigns(): Promise<VitalSign[]> {
 
 async function logout(): Promise<void> {
   try {
-    await axios.post(`http://localhost:3000/users/auth/logout`, undefined, {
-      withCredentials: true,
-    });
+    await axiosInstance.post(
+      `http://localhost:3000/users/auth/logout`,
+      undefined,
+      {
+        withCredentials: true,
+      }
+    );
   } catch (error) {
     console.log(error);
   } finally {
@@ -168,7 +173,7 @@ async function handleDelete(vitalSign: VitalSign): Promise<void> {
 
   try {
     const userId = userStore.userId;
-    const response = await axios.delete(
+    const response = await axiosInstance.delete(
       `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
       { withCredentials: true }
     );
@@ -191,7 +196,7 @@ async function saveChanges(vitalSign: VitalSign) {
 
   try {
     const userId = userStore.userId;
-    await axios.put(
+    await axiosInstance.put(
       `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
       raw,
       { withCredentials: true }
@@ -210,7 +215,7 @@ async function createNew(vitalSign: VitalSign) {
 
   try {
     const userId = userStore.userId;
-    await axios.post(
+    await axiosInstance.post(
       `http://localhost:3000/users/${userId}/${resourceName}`,
       raw,
       { withCredentials: true }

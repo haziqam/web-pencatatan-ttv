@@ -98,6 +98,7 @@ import {
 } from "src/utils/parseValidationError";
 import InputText from "primevue/inputtext";
 import Button from "primevue/button";
+import axiosInstance from "src/axios/axiosInstance";
 
 const form: LoginRequest = reactive({
   email: "",
@@ -115,7 +116,7 @@ async function login() {
 
     loginSchema.parse(form);
 
-    const response = await axios.post<LoginResponse>(
+    const response = await axiosInstance.post<LoginResponse>(
       "http://localhost:3000/users/auth/login",
       form,
       { withCredentials: true }
