@@ -1,52 +1,84 @@
 <template>
   <div class="auth-page">
-    <div class="container page">
-      <div class="row">
-        <div class="col-md-6 offset-md-3 col-xs-12">
-          <h1 class="text-xs-center">Login</h1>
-          <p class="text-xs-center">
-            <RouterLink to="/register"> Need an account? </RouterLink>
-          </p>
-          <form ref="formRef" aria-label="Login form" @submit.prevent="login">
-            <fieldset class="form-group" aria-required="true">
-              <label class="form-label">Email</label>
-              <div class="error-messages">
-                {{ validationErrors.email }}
-              </div>
-              <input
-                v-model="form.email"
-                aria-label="Email"
-                class="form-control"
-                type="email"
-                required
-                placeholder="Email"
-              />
-            </fieldset>
-            <fieldset class="form-group">
-              <label class="form-label">Password</label>
-              <div class="error-messages">
-                {{ validationErrors.password }}
-              </div>
-              <input
-                v-model="form.password"
-                aria-label="Password"
-                class="form-control"
-                type="password"
-                required
-                placeholder="Password"
-              />
-            </fieldset>
-            <button
-              class="btn btn-lg btn-primary pull-xs-right"
-              :disabled="!form.email || !form.password"
-              type="submit"
-            >
-              Sign in
-            </button>
-            <div class="error-messages">
-              {{ requestError }}
+    <div
+      class="container page"
+      :style="{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }"
+    >
+      <div
+        class="card"
+        :style="{
+          backgroundColor: 'rgb(32, 32, 32)',
+          borderRadius: '10px',
+          padding: '40px',
+          boxShadow: '5px 5px 20px 6px #315247',
+        }"
+      >
+        <div>
+          <div
+            class="col-md-6 offset-md-3 col-xs-12"
+            :style="{ display: 'flex', justifyContent: 'center' }"
+          >
+            <div>
+              <h1
+                class="text-xs-center"
+                :style="{ color: 'white', fontWeight: 'bold' }"
+              >
+                Login
+              </h1>
+              <p class="text-xs-center">
+                <RouterLink to="/register"> Need an account? </RouterLink>
+              </p>
+              <form
+                ref="formRef"
+                aria-label="Login form"
+                @submit.prevent="login"
+              >
+                <div :style="{ display: 'inline-block' }">
+                  <fieldset class="form-group" aria-required="true">
+                    <label class="form-label">Email</label>
+                    <div class="error-messages">
+                      {{ validationErrors.email }}
+                    </div>
+                    <InputText
+                      v-model="form.email"
+                      aria-label="Email"
+                      type="email"
+                      required
+                      placeholder="Email"
+                      :pt:root:style="{ width: '20rem' }"
+                    />
+                  </fieldset>
+                  <fieldset class="form-group">
+                    <label class="form-label">Password</label>
+                    <div class="error-messages">
+                      {{ validationErrors.password }}
+                    </div>
+                    <InputText
+                      v-model="form.password"
+                      aria-label="Password"
+                      type="password"
+                      required
+                      placeholder="Password"
+                      :pt:root:style="{ width: '20rem' }"
+                    />
+                  </fieldset>
+                  <Button
+                    :disabled="!form.email || !form.password"
+                    type="submit"
+                  >
+                    Sign in
+                  </Button>
+                  <div class="error-messages" :style="{ marginTop: '15px' }">
+                    {{ requestError }}
+                  </div>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -64,6 +96,9 @@ import {
   ErrorMessage,
   parseValidationError,
 } from "src/utils/parseValidationError";
+import InputText from "primevue/inputtext";
+import Button from "primevue/button";
+import Card from "primevue/card";
 
 const form: LoginRequest = reactive({
   email: "",

@@ -1,7 +1,10 @@
 <template>
-  <div class="card">
+  <div class="card" :style="{ backgroundColor: 'rgb(64, 64, 64)' }">
     <div :style="{ marginBottom: '10px' }">
-      <Toolbar class="mb-6">
+      <Toolbar
+        class="mb-6"
+        :pt:root:style="{ boxShadow: '5px 5px 20px 6px #315247' }"
+      >
         <template #start>
           <Button
             label="New"
@@ -29,6 +32,9 @@
       @rowExpand="onExpandRow"
       tableStyle="min-width: 50rem"
       dataKey="id"
+      :pt:root:style="{
+        boxShadow: '5px 5px 20px 6px #315247',
+      }"
     >
       <Column expander style="width: 5rem" />
       <Column field="name" header="Name"></Column>
@@ -38,22 +44,24 @@
         </template>
       </Column>
       <Column field="status" header="Status"></Column>
-      <Column header="Action" :exportable="false" style="min-width: 12rem">
+      <Column header="Action" :exportable="false">
         <template #body="slotProps">
-          <Button
-            icon="pi pi-pencil"
-            outlined
-            rounded
-            class="mr-2"
-            @click="handleEdit(slotProps.data)"
-          />
-          <Button
-            icon="pi pi-trash"
-            outlined
-            rounded
-            severity="danger"
-            @click="handleDelete(slotProps.data)"
-          />
+          <div :style="{ display: 'flex', gap: '10px' }">
+            <Button
+              icon="pi pi-pencil"
+              outlined
+              rounded
+              class="mr-2"
+              @click="handleEdit(slotProps.data)"
+            />
+            <Button
+              icon="pi pi-trash"
+              outlined
+              rounded
+              severity="danger"
+              @click="handleDelete(slotProps.data)"
+            />
+          </div>
         </template>
       </Column>
       <template #expansion="slotProps">

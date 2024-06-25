@@ -1,3 +1,8 @@
+body {
+  background-color: rgb(64, 64, 64);
+}
+
 .form-label {
   font-size: 0.8rem;
+  color: white;
 }
