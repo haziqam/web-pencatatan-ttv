@@ -8,6 +8,7 @@
             icon="pi pi-plus"
             severity="success"
             class="mr-2"
+            @click="newDialogVisible = true"
           />
         </template>
 
@@ -64,11 +65,17 @@
       </template>
     </DataTable>
   </div>
-  <EditVitalSignDialog
+  <VitalSignDialog
     :vitalSign="selectedVitalSign"
     :dialogVisible="editDialogVisible"
     @update:dialogVisible="editDialogVisible = $event"
     @submit="saveChanges"
+  />
+  <VitalSignDialog
+    :vitalSign="null"
+    :dialogVisible="newDialogVisible"
+    @update:dialogVisible="newDialogVisible = $event"
+    @submit="createNew"
   />
 </template>
 
@@ -83,13 +90,14 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import EditVitalSignDialog from "src/components/VitalSignDialog.vue";
+import VitalSignDialog from "src/components/VitalSignDialog.vue";
 
 const vitalSigns = ref<VitalSign[]>([]);
 const errorMessage = ref<string | null>(null);
 const userStore = useUserStore();
 const router = useRouter();
 const editDialogVisible = ref(false);
+const newDialogVisible = ref(false);
 const expandedRows = ref<{ [key: string]: boolean }>({});
 const selectedVitalSign = ref<VitalSign | null>(null);
 
@@ -166,6 +174,24 @@ async function saveChanges(vitalSign: VitalSign) {
       { withCredentials: true }
     );
     editDialogVisible.value = false;
+    vitalSigns.value = await fetchVitalSigns();
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function createNew(vitalSign: VitalSign) {
+  const raw = toRaw(vitalSign);
+  const resourceName = getResourceName(raw);
+
+  try {
+    const userId = userStore.userId;
+    await axios.post(
+      `http://localhost:3000/users/${userId}/${resourceName}`,
+      raw,
+      { withCredentials: true }
+    );
+    newDialogVisible.value = false;
     vitalSigns.value = await fetchVitalSigns();
   } catch (error) {
     console.log(error);

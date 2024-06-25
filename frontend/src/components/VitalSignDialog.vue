@@ -3,10 +3,25 @@
     :visible="dialogVisible"
     @update:visible="emitUpdateDialogVisible"
     modal
-    header="Update Vital Sign"
+    :header="isNew ? 'Create New Vital Sign' : 'Update Vital Sign'"
     :style="{ width: '25rem' }"
   >
     <div class="flex-auto">
+      <div v-if="isNew">
+        <div>
+          <label for="vitalSignName" class="font-bold block mb-2">
+            Vital Sign Name
+          </label>
+        </div>
+        <Select
+          v-model="localVitalSign.name"
+          :options="vitalSignOptions"
+          optionValue="value"
+          optionLabel="label"
+          placeholder="Select a Vital Sign"
+          class="w-full mb-6"
+        />
+      </div>
       <div>
         <label for="datepicker-24h" class="font-bold block mb-2">
           Time Measured
@@ -20,6 +35,7 @@
         dateFormat="dd/mm/yy"
         hourFormat="24"
       />
+      <!-- Other input fields based on selected vital sign -->
       <div v-if="localVitalSign.name === 'BLOOD_PRESSURE'">
         <div>
           <label for="systole" class="font-bold block mb-2"> Systole </label>
@@ -103,6 +119,7 @@ import { defineProps, defineEmits, reactive, watch } from "vue";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
+import Select from "primevue/select";
 import { VitalSign } from "src/types/VitalSign";
 
 const props = defineProps<{
@@ -112,10 +129,6 @@ const props = defineProps<{
 
 const emits = defineEmits(["update:dialogVisible", "submit"]);
 
-function emitUpdateDialogVisible(value: boolean) {
-  emits("update:dialogVisible", value);
-}
-
 const localVitalSign = reactive<VitalSign>({
   name: "BLOOD_PRESSURE",
   timeMeasured: new Date().toISOString(),
@@ -123,15 +136,35 @@ const localVitalSign = reactive<VitalSign>({
   status: "NORMAL",
 } as VitalSign);
 
+const vitalSignOptions = [
+  { value: "BLOOD_PRESSURE", label: "Blood Pressure" },
+  { value: "BODY_TEMPERATURE", label: "Body Temperature" },
+  { value: "HEART_BEAT", label: "Heart Beat" },
+  { value: "RESPIRATORY_RATE", label: "Respiratory Rate" },
+];
+
+let isNew = true;
+
 watch(
   () => props.vitalSign,
   (newVal) => {
     if (newVal) {
+      isNew = false;
       Object.assign(localVitalSign, newVal);
+    } else {
+      isNew = true;
+      resetLocalVitalSign();
     }
   },
   { immediate: true }
 );
+
+function resetLocalVitalSign() {
+  localVitalSign.name = "BLOOD_PRESSURE";
+  localVitalSign.timeMeasured = new Date().toISOString();
+  localVitalSign.userId = "";
+  localVitalSign.status = "NORMAL";
+}
 
 function submitEdit() {
   emits("submit", localVitalSign);
@@ -139,5 +172,9 @@ function submitEdit() {
 
 function cancelEdit() {
   emits("update:dialogVisible", false);
+}
+
+function emitUpdateDialogVisible(value: boolean) {
+  emits("update:dialogVisible", value);
 }
 </script>
