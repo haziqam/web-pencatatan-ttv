@@ -15,9 +15,20 @@
         />
       </template>
     </Toolbar>
-    <DataTable :value="vitalSigns" tableStyle="min-width: 50rem" dataKey="id">
+    <DataTable
+      :value="vitalSigns"
+      v-model:expandedRows="expandedRows"
+      @rowExpand="onExpandRow"
+      tableStyle="min-width: 50rem"
+      dataKey="id"
+    >
+      <Column expander style="width: 5rem" />
       <Column field="name" header="Name"></Column>
-      <Column field="timeMeasured" header="Time Measured"></Column>
+      <Column field="timeMeasured" header="Time Measured">
+        <template #body="slotProps">
+          {{ reformatDate(slotProps.data.timeMeasured) }}
+        </template>
+      </Column>
       <Column field="status" header="Status"></Column>
       <Column header="Action" :exportable="false" style="min-width: 12rem">
         <template #body="slotProps">
@@ -37,8 +48,95 @@
           />
         </template>
       </Column>
+      <template #expansion="slotProps">
+        <ul v-for="(value, key) in slotProps.data" :key="key">
+          <li v-if="notCommonKey(key)">
+            {{ reformatKey(key as any) }} : {{ value }}
+          </li>
+        </ul>
+      </template>
     </DataTable>
   </div>
+  <Dialog
+    v-model:visible="editDialogVisible"
+    modal
+    header="Update Vital Sign"
+    :style="{ width: '25rem' }"
+  >
+    <div class="flex-auto">
+      <div>
+        <label for="datepicker-24h" class="font-bold block mb-2">
+          Time Measured
+        </label>
+      </div>
+      <DatePicker
+        id="datepicker-24h"
+        v-model="selectedVitalSign!.timeMeasured"
+        showTime
+        dateFormat="dd/mm/yy"
+        hourFormat="24"
+      />
+      <div v-if="selectedVitalSign!.name === 'BLOOD_PRESSURE'">
+        <label for="systole" class="font-bold block mb-2"> Systole </label>
+        <input
+          id="systole"
+          v-model="selectedVitalSign!.systole"
+          type="number"
+          class="p-inputtext p-component"
+        />
+        <label for="diastole" class="font-bold block mb-2"> Diastole </label>
+        <input
+          id="diastole"
+          v-model="selectedVitalSign!.diastole"
+          type="number"
+          class="p-inputtext p-component"
+        />
+      </div>
+      <div v-if="selectedVitalSign!.name === 'BODY_TEMPERATURE'">
+        <label for="celcius" class="font-bold block mb-2">
+          Temperature (C)
+        </label>
+        <input
+          id="celcius"
+          v-model="selectedVitalSign!.celcius"
+          type="number"
+          step="0.1"
+          class="p-inputtext p-component"
+        />
+      </div>
+      <div v-if="selectedVitalSign!.name === 'HEART_BEAT'">
+        <label for="beatsPerMinute" class="font-bold block mb-2">
+          Beats Per Minute
+        </label>
+        <input
+          id="beatsPerMinute"
+          v-model="selectedVitalSign!.beatsPerMinute"
+          type="number"
+          class="p-inputtext p-component"
+        />
+      </div>
+      <div v-if="selectedVitalSign!.name === 'RESPIRATORY_RATE'">
+        <label for="breathsPerMinute" class="font-bold block mb-2">
+          Breaths Per Minute
+        </label>
+        <input
+          id="breathsPerMinute"
+          v-model="selectedVitalSign!.breathsPerMinute"
+          type="number"
+          class="p-inputtext p-component"
+        />
+      </div>
+    </div>
+    <div class="flex justify-end gap-2">
+      <Button
+        type="button"
+        label="Cancel"
+        severity="secondary"
+        @click="editDialogVisible = false"
+      ></Button>
+      <Button type="button" label="Save" @click="saveChanges"></Button>
+    </div>
+  </Dialog>
 </template>
 
 <script setup lang="ts">
@@ -52,11 +150,16 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
+import Dialog from "primevue/dialog";
+import DatePicker from "primevue/datepicker";
 
 const vitalSigns = ref<VitalSign[]>([]);
 const errorMessage = ref<string | null>(null);
 const userStore = useUserStore();
 const router = useRouter();
+const editDialogVisible = ref(false);
+const expandedRows = ref<{ [key: string]: boolean }>({});
+const selectedVitalSign = ref<VitalSign | null>(null);
 
 try {
   vitalSigns.value = await fetchVitalSigns();
@@ -65,7 +168,6 @@ try {
     console.log(error.response);
     const status = error.response?.status;
     if (status === 403 || status === 401) {
-      // show toast showing session expired
       const router = useRouter();
       router.push("/login");
     }
@@ -122,7 +224,68 @@ async function handleDelete(vitalSign: VitalSign): Promise<void> {
   }
 }
 
-async function handleEdit(vitalSign: VitalSign): Promise<void> {
-  console.log(toRaw(vitalSign));
+function handleEdit(vitalSign: VitalSign) {
+  selectedVitalSign.value = { ...vitalSign };
+  editDialogVisible.value = true;
+}
+
+async function saveChanges() {
+  if (selectedVitalSign.value) {
+    const raw = toRaw(selectedVitalSign.value);
+    const resourceName =
+      raw.name == "BLOOD_PRESSURE"
+        ? "blood-pressures"
+        : raw.name == "BODY_TEMPERATURE"
+        ? "body-temperatures"
+        : raw.name == "HEART_BEAT"
+        ? "heart-beats"
+        : "respiratory-rates";
+
+    try {
+      const userId = userStore.userId;
+      await axios.put(
+        `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
+        raw,
+        { withCredentials: true }
+      );
+      editDialogVisible.value = false;
+      vitalSigns.value = await fetchVitalSigns();
+    } catch (error) {
+      console.log(error);
+    }
+  }
+}
+
+function reformatDate(stringDate: string) {
+  const date = new Date(stringDate);
+  return date.toLocaleString("en-GB", { timeZone: "Asia/Jakarta" });
+}
+
+function onExpandRow(id: string) {
+  if (id in expandedRows) delete expandedRows.value[id];
+  else expandedRows.value[id] = true;
+}
+
+function notCommonKey(key: any) {
+  const common = ["id", "name", "timeMeasured", "userId", "status"];
+  return !common.includes(key);
+}
+
+function reformatKey(
+  key:
+    | "celcius"
+    | "beatsPerMinute"
+    | "breathsPerMinute"
+    | "systole"
+    | "diastole"
+) {
+  const dict = {
+    celcius: "Temperature (C)",
+    beatsPerMinute: "Beats Per Minute",
+    breathsPerMinute: "Breaths Per Minute",
+    systole: "Systole",
+    diastole: "Diastole",
+  };
+  return dict[key];
 }
 </script>
