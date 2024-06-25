@@ -107,15 +107,20 @@
         type="button"
         label="Cancel"
         severity="secondary"
-        @click="cancelEdit"
+        @click="cancel"
       ></Button>
-      <Button type="button" label="Save" @click="submitEdit"></Button>
+      <Button
+        type="button"
+        label="Save"
+        @click="submit"
+        :disabled="!areFieldsFilled"
+      ></Button>
     </div>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits, reactive, watch } from "vue";
+import { defineProps, defineEmits, reactive, watch, computed } from "vue";
 import DatePicker from "primevue/datepicker";
 import Button from "primevue/button";
 import Dialog from "primevue/dialog";
@@ -146,14 +151,16 @@ const vitalSignOptions = [
 let isNew = true;
 
 watch(
-  () => props.vitalSign,
+  () => props.dialogVisible,
   (newVal) => {
     if (newVal) {
-      isNew = false;
-      Object.assign(localVitalSign, newVal);
-    } else {
-      isNew = true;
-      resetLocalVitalSign();
+      if (!props.vitalSign) {
+        isNew = true;
+        resetLocalVitalSign();
+      } else {
+        isNew = false;
+        Object.assign(localVitalSign, props.vitalSign);
+      }
     }
   },
   { immediate: true }
@@ -166,15 +173,37 @@ function resetLocalVitalSign() {
   localVitalSign.status = "NORMAL";
 }
 
-function submitEdit() {
+function submit() {
   emits("submit", localVitalSign);
 }
 
-function cancelEdit() {
+function cancel() {
   emits("update:dialogVisible", false);
 }
 
 function emitUpdateDialogVisible(value: boolean) {
   emits("update:dialogVisible", value);
 }
+
+const areFieldsFilled = computed(() => {
+  if (
+    localVitalSign.timeMeasured == undefined ||
+    localVitalSign.name == undefined
+  )
+    return false;
+
+  switch (localVitalSign.name) {
+    case "BLOOD_PRESSURE":
+      return (
+        localVitalSign.systole != undefined &&
+        localVitalSign.diastole != undefined
+      );
+    case "BODY_TEMPERATURE":
+      return localVitalSign.celcius != undefined;
+    case "HEART_BEAT":
+      return localVitalSign.beatsPerMinute != undefined;
+    case "RESPIRATORY_RATE":
+      return localVitalSign.breathsPerMinute != undefined;
+  }
+});
 </script>
