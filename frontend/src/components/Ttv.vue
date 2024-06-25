@@ -64,102 +64,12 @@
       </template>
     </DataTable>
   </div>
-  <Dialog
-    v-model:visible="editDialogVisible"
-    modal
-    header="Update Vital Sign"
-    :style="{ width: '25rem' }"
-  >
-    <div class="flex-auto">
-      <div>
-        <label for="datepicker-24h" class="font-bold block mb-2">
-          Time Measured
-        </label>
-      </div>
-      <DatePicker
-        :style="{ marginBottom: '10px' }"
-        id="datepicker-24h"
-        v-model="selectedVitalSign!.timeMeasured"
-        showTime
-        dateFormat="dd/mm/yy"
-        hourFormat="24"
-      />
-      <div v-if="selectedVitalSign!.name === 'BLOOD_PRESSURE'">
-        <div>
-          <label for="systole" class="font-bold block mb-2"> Systole </label>
-        </div>
-        <input
-          :style="{ marginBottom: '10px' }"
-          id="systole"
-          v-model="selectedVitalSign!.systole"
-          type="number"
-          class="p-inputtext p-component"
-        />
-        <div>
-          <label for="diastole" class="font-bold block mb-2"> Diastole </label>
-        </div>
-        <input
-          :style="{ marginBottom: '10px' }"
-          id="diastole"
-          v-model="selectedVitalSign!.diastole"
-          type="number"
-          class="p-inputtext p-component"
-        />
-      </div>
-      <div v-if="selectedVitalSign!.name === 'BODY_TEMPERATURE'">
-        <div>
-          <label for="celcius" class="font-bold block mb-2">
-            Temperature (C)
-          </label>
-        </div>
-        <input
-          :style="{ marginBottom: '10px' }"
-          id="celcius"
-          v-model="selectedVitalSign!.celcius"
-          type="number"
-          step="0.1"
-          class="p-inputtext p-component"
-        />
-      </div>
-      <div v-if="selectedVitalSign!.name === 'HEART_BEAT'">
-        <div>
-          <label for="beatsPerMinute" class="font-bold block mb-2">
-            Beats Per Minute
-          </label>
-        </div>
-        <input
-          :style="{ marginBottom: '10px' }"
-          id="beatsPerMinute"
-          v-model="selectedVitalSign!.beatsPerMinute"
-          type="number"
-          class="p-inputtext p-component"
-        />
-      </div>
-      <div v-if="selectedVitalSign!.name === 'RESPIRATORY_RATE'">
-        <div>
-          <label for="breathsPerMinute" class="font-bold block mb-2">
-            Breaths Per Minute
-          </label>
-        </div>
-        <input
-          :style="{ marginBottom: '10px' }"
-          id="breathsPerMinute"
-          v-model="selectedVitalSign!.breathsPerMinute"
-          type="number"
-          class="p-inputtext p-component"
-        />
-      </div>
-    </div>
-    <div :style="{ display: 'flex', marginTop: '10px', gap: '15px' }">
-      <Button
-        type="button"
-        label="Cancel"
-        severity="secondary"
-        @click="editDialogVisible = false"
-      ></Button>
-      <Button type="button" label="Save" @click="saveChanges"></Button>
-    </div>
-  </Dialog>
+  <EditVitalSignDialog
+    :vitalSign="selectedVitalSign"
+    :dialogVisible="editDialogVisible"
+    @update:dialogVisible="editDialogVisible = $event"
+    @submit="saveChanges"
+  />
 </template>
 
 <script setup lang="ts">
@@ -173,8 +83,7 @@ import DataTable from "primevue/datatable";
 import Column from "primevue/column";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
-import Dialog from "primevue/dialog";
-import DatePicker from "primevue/datepicker";
+import EditVitalSignDialog from "src/components/VitalSignDialog.vue";
 
 const vitalSigns = ref<VitalSign[]>([]);
 const errorMessage = ref<string | null>(null);
@@ -245,23 +154,21 @@ function handleEdit(vitalSign: VitalSign) {
   editDialogVisible.value = true;
 }
 
-async function saveChanges() {
-  if (selectedVitalSign.value) {
-    const raw = toRaw(selectedVitalSign.value);
-    const resourceName = getResourceName(raw);
+async function saveChanges(vitalSign: VitalSign) {
+  const raw = toRaw(vitalSign);
+  const resourceName = getResourceName(raw);
 
-    try {
-      const userId = userStore.userId;
-      await axios.put(
-        `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
-        raw,
-        { withCredentials: true }
-      );
-      editDialogVisible.value = false;
-      vitalSigns.value = await fetchVitalSigns();
-    } catch (error) {
-      console.log(error);
-    }
+  try {
+    const userId = userStore.userId;
+    await axios.put(
+      `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
+      raw,
+      { withCredentials: true }
+    );
+    editDialogVisible.value = false;
+    vitalSigns.value = await fetchVitalSigns();
+  } catch (error) {
+    console.log(error);
   }
 }
 
