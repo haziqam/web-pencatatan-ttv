@@ -1,4 +1,11 @@
 <template>
+  <Toast />
+  <h1 class="text-xs-center" :style="{ color: 'white', fontWeight: 'bold' }">
+    Vital Sign Tracker
+  </h1>
+  <p class="text-xs-center" :style="{ color: 'white' }">
+    By: Haziq Abiyyu Mahdy
+  </p>
   <div class="card" :style="{ backgroundColor: 'rgb(64, 64, 64)' }">
     <div :style="{ marginBottom: '10px' }">
       <Toolbar
@@ -32,6 +39,9 @@
       @rowExpand="onExpandRow"
       tableStyle="min-width: 50rem"
       dataKey="id"
+      paginator
+      :rows="5"
+      :rowsPerPageOptions="[5, 10, 20, 50]"
       :pt:root:style="{
         boxShadow: '5px 5px 20px 6px #315247',
       }"
@@ -99,7 +109,11 @@ import Column from "primevue/column";
 import Button from "primevue/button";
 import Toolbar from "primevue/toolbar";
 import VitalSignDialog from "src/components/VitalSignDialog.vue";
+import Toast from "primevue/toast";
+import { useToast } from "primevue/usetoast";
+import { showSuccess } from "src/utils/toast";
 
+const toast = useToast();
 const vitalSigns = ref<VitalSign[]>([]);
 const errorMessage = ref<string | null>(null);
 const userStore = useUserStore();
@@ -158,6 +172,7 @@ async function handleDelete(vitalSign: VitalSign): Promise<void> {
       `http://localhost:3000/users/${userId}/${resourceName}/${raw.id}`,
       { withCredentials: true }
     );
+    showSuccess(toast, "Vital sign data deleted successfully");
   } catch (error) {
     console.log(error);
   } finally {
@@ -183,6 +198,7 @@ async function saveChanges(vitalSign: VitalSign) {
     );
     editDialogVisible.value = false;
     vitalSigns.value = await fetchVitalSigns();
+    showSuccess(toast, "Vital sign data edited successfully");
   } catch (error) {
     console.log(error);
   }
@@ -201,6 +217,7 @@ async function createNew(vitalSign: VitalSign) {
     );
     newDialogVisible.value = false;
     vitalSigns.value = await fetchVitalSigns();
+    showSuccess(toast, "Vital sign data stored successfully");
   } catch (error) {
     console.log(error);
   }

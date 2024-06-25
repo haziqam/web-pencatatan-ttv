@@ -6,6 +6,7 @@ import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 import PrimeVue from "primevue/config";
 import Lara from "@primevue/themes/lara";
 import "primeicons/primeicons.css";
+import ToastService from "primevue/toastservice";
 
 const app = createApp(App);
 const pinia = createPinia();
@@ -17,5 +18,6 @@ app.use(PrimeVue, {
     preset: Lara,
   },
 });
+app.use(ToastService);
 
 app.mount("#app");
